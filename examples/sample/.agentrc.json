@@ -1,0 +1,18 @@
+{
+  "modelProvider": "local",
+  "model": "qwen2.5-coder",
+  "localModelUrl": "http://localhost:11434/v1",
+  "embeddingProvider": "local",
+  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
+  "maxChunkSize": 400,
+  "chunkOverlap": 40,
+  "includeGlobs": [
+    "src/**/*.ts"
+  ],
+  "excludeGlobs": [],
+  "historyDir": ".agent/sessions",
+  "dbPath": ".agent/index.db",
+  "temperature": 0.2,
+  "topK": 5
+}
+

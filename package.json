@@ -1,0 +1,47 @@
+{
+  "name": "agent-cli",
+  "version": "0.1.0",
+  "description": "CLI agent that indexes local repos and answers questions with hosted or local LLMs.",
+  "bin": {
+    "agent": "bin/agent.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "prepare": "npm run build",
+    "dev": "tsx src/cli.ts",
+    "smoke": "ts-node --transpile-only scripts/smoke.ts"
+  },
+  "type": "commonjs",
+  "keywords": [
+    "ai",
+    "cli",
+    "rag",
+    "codebase"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@xenova/transformers": "^2.17.2",
+    "better-sqlite3": "^9.6.0",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0",
+    "globby": "^14.0.2",
+    "ignore": "^5.3.1",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.73.1",
+    "ora": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.9",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.7.4",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.15.7",
+    "typescript": "^5.6.3"
+  }
+}
+
