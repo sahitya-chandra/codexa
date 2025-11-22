@@ -15,15 +15,13 @@ If information is missing from the context, say so and suggest running ingestion
 export async function askQuestion(
   cwd: string,
   config: AgentConfig,
-  options: AskOptions
+  options: AskOptions,
 ): Promise<string> {
   const sessionId = options.session ?? 'default';
   const history = await loadHistory(config.historyDir, sessionId);
   const matches = await retrieveContext(options.question, config);
   if (matches.length === 0) {
-    throw new Error(
-      'No chunks were found in the vector store. Please run `agent ingest` first.'
-    );
+    throw new Error('No chunks were found in the vector store. Please run `agent ingest` first.');
   }
 
   const context = formatContext(matches);
@@ -32,29 +30,26 @@ export async function askQuestion(
     ...history,
     {
       role: 'user',
-      content: `Context:\n${context}\n\nQuestion: ${options.question}\nAnswer:`
-    }
+      content: `Context:\n${context}\n\nQuestion: ${options.question}\nAnswer:`,
+    },
   ];
 
   const llm = createLLMClient(config);
   const answer = await llm.generate(messages, {
     stream: options.stream,
-    onToken: options.stream ? (token) => process.stdout.write(token) : undefined
+    onToken: options.stream ? (token) => process.stdout.write(token) : undefined,
   });
 
   await saveHistory(config.historyDir, sessionId, [
     ...history,
     { role: 'user', content: options.question },
-    { role: 'assistant', content: answer }
+    { role: 'assistant', content: answer },
   ]);
 
   return answer;
 }
 
-async function loadHistory(
-  historyDir: string,
-  sessionId: string
-): Promise<ConversationMessage[]> {
+async function loadHistory(historyDir: string, sessionId: string): Promise<ConversationMessage[]> {
   await fs.ensureDir(historyDir);
   const filePath = path.join(historyDir, `${sessionId}.json`);
   if (!(await fs.pathExists(filePath))) {
@@ -66,10 +61,9 @@ async function loadHistory(
 async function saveHistory(
   historyDir: string,
   sessionId: string,
-  messages: ConversationMessage[]
+  messages: ConversationMessage[],
 ): Promise<void> {
   await fs.ensureDir(historyDir);
   const filePath = path.join(historyDir, `${sessionId}.json`);
   await fs.writeJson(filePath, messages, { spaces: 2 });
 }
-

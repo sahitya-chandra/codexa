@@ -6,13 +6,10 @@
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
   "maxChunkSize": 400,
   "chunkOverlap": 40,
-  "includeGlobs": [
-    "src/**/*.ts"
-  ],
+  "includeGlobs": ["src/**/*.ts"],
   "excludeGlobs": [],
   "historyDir": ".agent/sessions",
   "dbPath": ".agent/index.db",
   "temperature": 0.2,
   "topK": 5
 }
-

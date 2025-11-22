@@ -51,7 +51,7 @@ export class VectorStore {
           end_line INTEGER NOT NULL,
           content TEXT NOT NULL,
           embedding TEXT NOT NULL
-        )`
+        )`,
       )
       .run();
   }
@@ -65,7 +65,7 @@ export class VectorStore {
     const db = this.connection;
     const insert = db.prepare(
       `INSERT INTO chunks (file_path, start_line, end_line, content, embedding)
-       VALUES (@filePath, @startLine, @endLine, @content, @embedding)`
+       VALUES (@filePath, @startLine, @endLine, @content, @embedding)`,
     );
     const tx = db.transaction((rows: FileChunk[]) => {
       rows.forEach((chunk) => {
@@ -77,7 +77,7 @@ export class VectorStore {
           startLine: chunk.startLine,
           endLine: chunk.endLine,
           content: chunk.content,
-          embedding: JSON.stringify(chunk.embedding)
+          embedding: JSON.stringify(chunk.embedding),
         });
       });
     });
@@ -96,7 +96,7 @@ export class VectorStore {
         endLine: row.end_line,
         content: row.content,
         embedding,
-        score
+        score,
       };
     });
     results.sort((a, b) => b.score - a.score);
@@ -110,4 +110,3 @@ export class VectorStore {
     return this.db!;
   }
 }
-

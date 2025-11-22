@@ -5,13 +5,13 @@ import { FileChunk } from './types';
 export async function chunkFile(
   filePath: string,
   maxChunkSize: number,
-  overlap: number
+  overlap: number,
 ): Promise<FileChunk[]> {
   const chunks: FileChunk[] = [];
   const fileStream = fs.createReadStream(filePath, { encoding: 'utf8' });
   const rl = readline.createInterface({
     input: fileStream,
-    crlfDelay: Infinity
+    crlfDelay: Infinity,
   });
 
   const buffer: string[] = [];
@@ -30,7 +30,7 @@ export async function chunkFile(
         filePath,
         startLine,
         endLine: lineNumber,
-        content
+        content,
       });
 
       const overlapStart = Math.max(0, buffer.length - overlap);
@@ -47,10 +47,9 @@ export async function chunkFile(
       filePath,
       startLine,
       endLine: lineNumber,
-      content: buffer.join('\n')
+      content: buffer.join('\n'),
     });
   }
 
   return chunks;
 }
-

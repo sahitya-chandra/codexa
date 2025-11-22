@@ -54,7 +54,7 @@ program
       const answer = await askQuestion(cwd, config, {
         question: prompt,
         session: options.session,
-        stream: options.stream ?? true
+        stream: options.stream ?? true,
       });
       if (!options.stream) {
         spinner.stop();
@@ -79,4 +79,3 @@ function handleError(error: unknown): void {
   }
   process.exitCode = 1;
 }
-

@@ -35,4 +35,3 @@ export interface AskOptions {
   stream: boolean;
   session?: string;
 }
-

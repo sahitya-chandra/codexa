@@ -2,7 +2,10 @@ import { AgentConfig, RetrievalResult } from './types';
 import { createEmbedder } from './embeddings';
 import { VectorStore } from './db';
 
-export async function retrieveContext(question: string, config: AgentConfig): Promise<RetrievalResult[]> {
+export async function retrieveContext(
+  question: string,
+  config: AgentConfig,
+): Promise<RetrievalResult[]> {
   const embedder = await createEmbedder(config);
   const [questionEmbedding] = await embedder.embed([question]);
   const store = new VectorStore(config.dbPath);
@@ -18,4 +21,3 @@ export function formatContext(results: RetrievalResult[]): string {
     })
     .join('\n\n---\n\n');
 }
-

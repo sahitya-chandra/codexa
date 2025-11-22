@@ -10,19 +10,22 @@ export interface Embedder {
 class OpenAIEmbedder implements Embedder {
   private client: OpenAI;
 
-  constructor(private model: string, apiKey?: string) {
+  constructor(
+    private model: string,
+    apiKey?: string,
+  ) {
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is required for the OpenAI embedding provider.');
     }
     this.client = new OpenAI({
-      apiKey
+      apiKey,
     });
   }
 
   async embed(texts: string[]): Promise<number[][]> {
     const res = await this.client.embeddings.create({
       model: this.model,
-      input: texts
+      input: texts,
     });
     return res.data.map((item) => item.embedding as number[]);
   }
@@ -65,19 +68,20 @@ class LocalEmbedder implements Embedder {
 
   async embed(texts: string[]): Promise<number[][]> {
     const pipe = await this.getPipeline();
-    
+
     // Process all texts in parallel for much better performance
     const embeddingPromises = texts.map(async (text) => {
       const output = await pipe(text, {
         pooling: 'mean',
-        normalize: true
+        normalize: true,
       });
       return this.extractEmbedding(output);
     });
-    
+
     return Promise.all(embeddingPromises);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private extractEmbedding(output: any): number[] {
     const data = output?.data;
     if (data) {
@@ -86,8 +90,10 @@ class LocalEmbedder implements Embedder {
       } else if (data instanceof Float32Array || data instanceof Float64Array) {
         return Array.from(data);
       } else if (typeof data === 'object' && 'tolist' in data) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (data as any).tolist();
       } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return Array.from(data as any);
       }
     } else if (Array.isArray(output)) {
@@ -104,4 +110,3 @@ export async function createEmbedder(config: AgentConfig): Promise<Embedder> {
   }
   return new OpenAIEmbedder(config.embeddingModel, process.env.OPENAI_API_KEY);
 }
-

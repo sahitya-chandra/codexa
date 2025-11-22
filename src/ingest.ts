@@ -12,14 +12,18 @@ interface IngestOptions {
   force?: boolean;
 }
 
-export async function ingestRepository({ cwd, config, force = false }: IngestOptions): Promise<void> {
+export async function ingestRepository({
+  cwd,
+  config,
+  force = false,
+}: IngestOptions): Promise<void> {
   const spinner = ora('Scanning project files').start();
   const files = await globby(config.includeGlobs, {
     cwd,
     gitignore: true,
     ignore: config.excludeGlobs,
     absolute: true,
-    onlyFiles: true
+    onlyFiles: true,
   });
 
   if (files.length === 0) {
@@ -59,16 +63,16 @@ export async function ingestRepository({ cwd, config, force = false }: IngestOpt
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batchNum = Math.floor(i / batchSize) + 1;
     spinner.text = `Embedding chunks ${i + 1}-${Math.min(i + batchSize, chunks.length)} of ${chunks.length} (batch ${batchNum}/${totalBatches})`;
-    
-    await new Promise(resolve => setImmediate(resolve));
-    
+
+    await new Promise((resolve) => setImmediate(resolve));
+
     const slice = chunks.slice(i, i + batchSize);
     const embeddings = await embedder.embed(slice.map((chunk) => chunk.content));
     slice.forEach((chunk, idx) => {
       chunk.embedding = embeddings[idx];
     });
     batchedChunks.push(...slice);
-    
+
     spinner.text = `Embedded batch ${batchNum}/${totalBatches} (${batchedChunks.length}/${chunks.length} chunks)`;
   }
 
@@ -81,4 +85,3 @@ export async function ingestRepository({ cwd, config, force = false }: IngestOpt
   store.insertChunks(batchedChunks);
   spinner.succeed(`Stored ${batchedChunks.length} chunks for retrieval.`);
 }
-

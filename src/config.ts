@@ -26,19 +26,13 @@ const DEFAULT_CONFIG: AgentConfig = {
     '**/*.rs',
     '**/*.java',
     '**/*.md',
-    '**/*.json'
+    '**/*.json',
   ],
-  excludeGlobs: [
-    'node_modules/**',
-    '.git/**',
-    'dist/**',
-    'build/**',
-    '.agent/**'
-  ],
+  excludeGlobs: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.agent/**'],
   historyDir: '.agent/sessions',
   dbPath: '.agent/index.db',
   temperature: 0.2,
-  topK: 8
+  topK: 8,
 };
 
 export async function ensureConfig(cwd: string): Promise<AgentConfig> {
@@ -57,7 +51,7 @@ export async function loadConfig(cwd: string): Promise<AgentConfig> {
   } else {
     config = {
       ...DEFAULT_CONFIG,
-      ...(await fs.readJson(configPath))
+      ...(await fs.readJson(configPath)),
     };
   }
   return hydratePaths(cwd, config);
@@ -96,4 +90,3 @@ function makeRelative(cwd: string, maybeAbsolute: string): string {
   }
   return path.relative(cwd, maybeAbsolute);
 }
-
