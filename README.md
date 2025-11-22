@@ -34,23 +34,33 @@ agent ask "How do HTTP requests flow through the API?"
 
 | Field | Description |
 | --- | --- |
-| `modelProvider` | `openai` or `local` (OpenAI-compatible server). |
-| `model` | Chat/completion model ID (e.g., `gpt-4o-mini`, `qwen2.5-coder`). |
-| `localModelUrl` | Base URL when `modelProvider` is `local` (e.g., `http://localhost:11434/v1`). |
-| `embeddingProvider` | `openai` or `local` (uses `@xenova/transformers`). |
-| `embeddingModel` | OpenAI embedding ID or local transformer (e.g., `Xenova/all-MiniLM-L6-v2`). |
+| `modelProvider` | `openai` or `local` (OpenAI-compatible server). Default: `openai` |
+| `model` | Chat/completion model ID (e.g., `gpt-4o-mini`, `qwen2.5-coder:14b`). Default: `gpt-4o-mini` |
+| `localModelUrl` | Base URL when `modelProvider` is `local` (e.g., `http://localhost:11434/v1`). Required for local provider. |
+| `embeddingProvider` | `openai` or `local` (uses `@xenova/transformers`). Default: `local` |
+| `embeddingModel` | OpenAI embedding ID or local transformer (e.g., `Xenova/all-mpnet-base-v2`). Default: `Xenova/all-mpnet-base-v2` |
 | `includeGlobs` / `excludeGlobs` | File selection rules relative to the repo root. |
 | `maxChunkSize` / `chunkOverlap` | Chunker settings (characters). |
 | `dbPath` | SQLite database location (default `.agent/index.db`). |
 | `historyDir` | Conversation history directory (default `.agent/sessions`). |
 | `topK` | Number of chunks retrieved per question. |
 
+**Default Configuration**: The CLI defaults to free embeddings and OpenAI for language models:
+- **Embeddings**: Uses `Xenova/all-mpnet-base-v2` via `@xenova/transformers` - works immediately, no setup required. The model downloads automatically on first use. This is free and requires no API keys.
+- **Language Model**: Defaults to `openai` provider with `gpt-4o-mini`. Requires `OPENAI_API_KEY` environment variable. For a free alternative, see Local Model Support below.
+
 Hosted providers pull secrets from environment variables (`OPENAI_API_KEY`). Local providers can omit keys or set `localModelApiKey`.
 
 ### Local Model Support
 
-- **llama.cpp / Ollama**: start their OpenAI-compatible HTTP server and set `modelProvider: "local"` with `localModelUrl` to the server’s `/v1` endpoint.
-- **Embeddings**: set `embeddingProvider: "local"` to use `@xenova/transformers` models that download on first run.
+- **Embeddings**: Defaults to `embeddingProvider: "local"` using `@xenova/transformers`. The model (`Xenova/all-mpnet-base-v2`) downloads automatically on first use - no API keys or setup required. This provides high-quality 768-dimensional embeddings optimized for code understanding.
+
+- **Language Models**: To use a free local language model instead of OpenAI, set `modelProvider: "local"` in your config. Then:
+  1. Install [Ollama](https://ollama.ai) (or another OpenAI-compatible server)
+  2. Pull a code model: `ollama pull qwen2.5-coder:14b` (or `deepseek-coder:6.7b` for a smaller option)
+  3. Set `localModelUrl` in `.agentrc.json`: `"http://localhost:11434/v1"`
+  
+  Alternatively, you can use any OpenAI-compatible API server by setting `localModelUrl` to its base URL.
 
 ### Smoke Test
 

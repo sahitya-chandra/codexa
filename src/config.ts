@@ -8,11 +8,11 @@ dotenv.config();
 const CONFIG_FILENAME = '.agentrc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
-  modelProvider: 'openai',
-  model: 'gpt-4o-mini',
-  embeddingProvider: 'openai',
-  embeddingModel: 'text-embedding-3-small',
-  localModelUrl: '',
+  modelProvider: 'local',
+  model: 'qwen2.5-coder:7b',
+  embeddingProvider: 'local',
+  embeddingModel: 'Xenova/all-MiniLM-L6-v2',
+  localModelUrl: 'http://localhost:11434/api',
   localModelApiKey: '',
   maxChunkSize: 600,
   chunkOverlap: 80,
