@@ -1,17 +1,17 @@
 # Agent CLI
 
-A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG). It supports both hosted LLMs (like OpenAI) and local models (via Ollama, etc.), making it a versatile tool for code exploration and understanding.
+A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG). It is designed to run completely locally using Ollama for LLMs and local embeddings, but also supports OpenAI for embeddings if preferred.
 
 ## 🚀 Features
 
 - **Local-First Ingestion**: Indexes your repository locally using SQLite and vector embeddings.
-- **Flexible LLM Support**:
-  - **Hosted**: Works seamlessly with OpenAI's GPT models.
-  - **Local**: Supports local LLMs via OpenAI-compatible servers (e.g., Ollama, llama.cpp).
+- **Local LLM Support**: Uses [Ollama](https://ollama.com/) to answer questions about your code, ensuring your data stays private.
+- **Flexible Embeddings**:
+  - **Local**: Built-in support for local embeddings using `@xenova/transformers` (no API key needed).
+  - **OpenAI**: Option to use OpenAI's embedding models for higher accuracy.
 - **Smart Context Retrieval**: Uses vector similarity search to find relevant code chunks for your questions.
 - **Configurable**: Customize file inclusion/exclusion, chunking strategies, and model parameters via `.agentrc.json`.
 - **Conversation History**: Maintains session history for context-aware follow-up questions.
-- **Free Embeddings**: Built-in support for local embeddings using `@xenova/transformers` (no API key needed).
 
 ## 📂 Project Structure
 
@@ -22,7 +22,7 @@ agent-cli/
 ├── bin/                # CLI entry point
 ├── src/
 │   ├── embeddings/     # Embedding provider implementations (Local & OpenAI)
-│   ├── models/         # LLM provider implementations (OpenAI & Local)
+│   ├── models/         # LLM provider implementations (Local/Ollama)
 │   ├── utils/          # Utility functions
 │   ├── agent.ts        # Core agent logic (RAG pipeline)
 │   ├── chunker.ts      # File chunking logic
@@ -49,7 +49,7 @@ The Agent CLI operates in two main phases:
 2.  **Query Phase**:
     - **Embed Query**: Converts your question into a vector.
     - **Retrieve**: Finds the most similar code chunks from the database.
-    - **Generate**: Constructs a prompt with the retrieved context and conversation history, then queries the LLM for an answer.
+    - **Generate**: Constructs a prompt with the retrieved context and conversation history, then queries the local LLM (Ollama) for an answer.
 
 ## 🏁 Getting Started
 
@@ -57,6 +57,7 @@ The Agent CLI operates in two main phases:
 
 - Node.js (v18 or higher)
 - npm
+- [Ollama](https://ollama.com/) (Required for running the LLM)
 
 ### Installation
 
@@ -87,8 +88,14 @@ npm link # Optional: exposes `agent` command globally
     Use `--force` to rebuild the index from scratch.
 
 3.  **Ask**: Start asking questions.
+
     ```bash
     agent ask "How does the authentication flow work?"
+    ```
+
+    **Note**: Ensure Ollama is running and the configured model (default: `qwen2.5:3b-instruct`) is pulled:
+    ```bash
+    ollama pull qwen2.5:3b-instruct
     ```
 
 ## ⚙️ Configuration
@@ -97,16 +104,16 @@ The `.agentrc.json` file allows you to fine-tune the agent's behavior:
 
 | Field               | Description                                      | Default                       |
 | :------------------ | :----------------------------------------------- | :---------------------------- |
-| `modelProvider`     | `openai` or `local`.                             | `openai`                      |
-| `model`             | Model ID (e.g., `gpt-4o-mini`, `qwen2.5-coder`). | `gpt-4o-mini`                 |
-| `localModelUrl`     | Base URL for local model server.                 | `http://localhost:11434/v1`   |
+| `modelProvider`     | `local` (Only local supported currently).        | `local`                       |
+| `model`             | Model ID (e.g., `qwen2.5:3b-instruct`).          | `qwen2.5:3b-instruct`         |
+| `localModelUrl`     | Base URL for local model server.                 | `http://localhost:11434`      |
 | `embeddingProvider` | `openai` or `local`.                             | `local`                       |
-| `embeddingModel`    | Embedding model ID.                              | `Xenova/all-mpnet-base-v2`    |
+| `embeddingModel`    | Embedding model ID.                              | `Xenova/all-MiniLM-L6-v2`     |
 | `includeGlobs`      | Patterns for files to include.                   | `["**/*.ts", "**/*.js", ...]` |
 | `excludeGlobs`      | Patterns for files to exclude.                   | `["**/node_modules/**", ...]` |
-| `maxChunkSize`      | Maximum characters per chunk.                    | `1000`                        |
-| `chunkOverlap`      | Overlap between chunks.                          | `200`                         |
-| `topK`              | Number of chunks to retrieve.                    | `10`                          |
+| `maxChunkSize`      | Maximum characters per chunk.                    | `600`                         |
+| `chunkOverlap`      | Overlap between chunks.                          | `80`                          |
+| `topK`              | Number of chunks to retrieve.                    | `8`                           |
 
 ## 🧪 Development
 

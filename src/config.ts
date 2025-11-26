@@ -9,7 +9,7 @@ const CONFIG_FILENAME = '.agentrc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'local',
-  model: 'phi3:mini',
+  model: 'qwen2.5:3b-instruct',
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   localModelUrl: 'http://localhost:11434',
