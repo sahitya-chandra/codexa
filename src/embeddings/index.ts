@@ -104,9 +104,27 @@ class LocalEmbedder implements Embedder {
   }
 }
 
+// Cache embedders to avoid reloading models on every query
+const embedderCache = new Map<string, Embedder>();
+
+function getCacheKey(config: AgentConfig): string {
+  return `${config.embeddingProvider}:${config.embeddingModel}`;
+}
+
 export async function createEmbedder(config: AgentConfig): Promise<Embedder> {
-  if (config.embeddingProvider === 'local') {
-    return new LocalEmbedder(config.embeddingModel);
+  const cacheKey = getCacheKey(config);
+  const cached = embedderCache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
-  return new OpenAIEmbedder(config.embeddingModel, process.env.OPENAI_API_KEY);
+
+  let embedder: Embedder;
+  if (config.embeddingProvider === 'local') {
+    embedder = new LocalEmbedder(config.embeddingModel);
+  } else {
+    embedder = new OpenAIEmbedder(config.embeddingModel, process.env.OPENAI_API_KEY);
+  }
+
+  embedderCache.set(cacheKey, embedder);
+  return embedder;
 }

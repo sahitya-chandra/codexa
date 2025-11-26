@@ -10,7 +10,8 @@ export async function retrieveContext(
   const [questionEmbedding] = await embedder.embed([question]);
   const store = new VectorStore(config.dbPath);
   store.init();
-  return store.search(questionEmbedding, config.topK);
+  const results = store.search(questionEmbedding, config.topK);
+  return results;
 }
 
 export function formatContext(results: RetrievalResult[]): string {

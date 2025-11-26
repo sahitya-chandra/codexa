@@ -3,11 +3,17 @@ import fs from 'fs-extra';
 import Database from 'better-sqlite3';
 import { FileChunk, RetrievalResult } from './types';
 
+// Optimized cosine similarity computation
 function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    return 0;
+  }
   let dot = 0;
   let normA = 0;
   let normB = 0;
-  for (let i = 0; i < a.length; i += 1) {
+  // Use a single loop for better cache locality
+  const len = a.length;
+  for (let i = 0; i < len; i++) {
     const ai = a[i];
     const bi = b[i];
     dot += ai * bi;
@@ -17,7 +23,10 @@ function cosineSimilarity(a: number[], b: number[]): number {
   if (normA === 0 || normB === 0) {
     return 0;
   }
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  // Pre-compute sqrt values once
+  const sqrtNormA = Math.sqrt(normA);
+  const sqrtNormB = Math.sqrt(normB);
+  return dot / (sqrtNormA * sqrtNormB);
 }
 
 interface ChunkRow {
@@ -87,10 +96,32 @@ export class VectorStore {
   search(queryEmbedding: number[], topK: number): RetrievalResult[] {
     const db = this.connection;
     const rows = db.prepare('SELECT * FROM chunks').all() as ChunkRow[];
-    const results: RetrievalResult[] = rows.map((row) => {
+    
+    if (rows.length === 0) {
+      return [];
+    }
+    
+    // Log progress for large databases
+    if (rows.length > 1000) {
+      console.error(`[DEBUG] Searching through ${rows.length} chunks...`);
+    }
+    
+    // Use a min-heap approach: keep only the top K results
+    // This avoids sorting all results when we only need top K
+    const topResults: RetrievalResult[] = [];
+    const minScore = { value: -Infinity };
+    
+    for (const row of rows) {
+      // Parse embedding once
       const embedding = JSON.parse(row.embedding) as number[];
       const score = cosineSimilarity(queryEmbedding, embedding);
-      return {
+      
+      // Early skip if score is too low and we already have topK results
+      if (topResults.length >= topK && score <= minScore.value) {
+        continue;
+      }
+      
+      const result: RetrievalResult = {
         filePath: row.file_path,
         startLine: row.start_line,
         endLine: row.end_line,
@@ -98,9 +129,35 @@ export class VectorStore {
         embedding,
         score,
       };
-    });
-    results.sort((a, b) => b.score - a.score);
-    return results.slice(0, topK);
+      
+      // If we have fewer than topK results, just add it
+      if (topResults.length < topK) {
+        topResults.push(result);
+        // Update min score
+        if (result.score < minScore.value) {
+          minScore.value = result.score;
+        }
+        // Sort only when we reach topK
+        if (topResults.length === topK) {
+          topResults.sort((a, b) => a.score - b.score);
+          minScore.value = topResults[0].score;
+        }
+      } else if (score > minScore.value) {
+        // Replace the minimum score result
+        topResults[0] = result;
+        // Re-sort to maintain min-heap property
+        // For small topK (typically 8), this is efficient
+        topResults.sort((a, b) => a.score - b.score);
+        minScore.value = topResults[0].score;
+      }
+    }
+    
+    // Return in descending order of score
+    const finalResults = topResults.sort((a, b) => b.score - a.score);
+    if (rows.length > 1000) {
+      console.error(`[DEBUG] Search complete, returning top ${finalResults.length} results`);
+    }
+    return finalResults;
   }
 
   private get connection(): Database.Database {

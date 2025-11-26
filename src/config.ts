@@ -9,10 +9,10 @@ const CONFIG_FILENAME = '.agentrc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'local',
-  model: 'qwen2.5-coder:7b',
+  model: 'phi3:mini',
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
-  localModelUrl: 'http://localhost:11434/api',
+  localModelUrl: 'http://localhost:11434',
   localModelApiKey: '',
   maxChunkSize: 600,
   chunkOverlap: 80,

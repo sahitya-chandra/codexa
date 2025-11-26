@@ -55,6 +55,9 @@ program
         question: prompt,
         session: options.session,
         stream: options.stream ?? true,
+        onStatusUpdate: (status) => {
+          spinner.text = status;
+        },
       });
       if (!options.stream) {
         spinner.stop();

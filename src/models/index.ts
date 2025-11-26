@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import fetch from 'node-fetch';
 import { AgentConfig } from '../types';
 
 export interface LLMClient {
@@ -9,81 +9,85 @@ export interface LLMClient {
   ): Promise<string>;
 }
 
-class OpenAILLM implements LLMClient {
-  private client: OpenAI;
-
+/**
+ * OLLAMA CLIENT (OpenAI-compatible wrapper)
+ */
+class OllamaLLM implements LLMClient {
   constructor(
     private model: string,
-    apiKey?: string,
-    baseURL?: string,
-  ) {
-    this.client = new OpenAI({
-      apiKey,
-      baseURL,
-    });
-  }
+    private baseURL: string, // example: http://localhost:11434
+  ) {}
 
   async generate(
     messages: ChatCompletionMessageParam[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string> {
-    if (options?.stream) {
-      const stream = await this.client.chat.completions.create({
-        model: this.model,
-        messages,
-        temperature: 0.2,
-        stream: true,
-      });
-      let full = '';
-      for await (const part of stream) {
-        const delta = part.choices[0]?.delta?.content ?? '';
-        if (delta) {
-          full += delta;
-          options.onToken?.(delta);
-        }
-      }
-      return full;
+    // Turn messages into a single prompt
+    const prompt = messages
+      .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
+      .join('\n\n');
+
+    const body = {
+      model: this.model,
+      prompt,
+      stream: options?.stream ?? false,
+    };
+
+    const resp = await fetch(`${this.baseURL}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+      throw new Error(
+        `Ollama request failed: ${resp.status} ${await resp.text()}`,
+      );
     }
 
-    const completion = await this.client.chat.completions.create({
-      model: this.model,
-      messages,
-      temperature: 0.2,
-    });
-    return completion.choices[0]?.message?.content ?? '';
+    // Non-streaming mode
+    if (!options?.stream) {
+      const json = await resp.json();
+      return json.response ?? json.output ?? '';
+    }
+
+    // Streaming mode
+    const reader = resp.body!.getReader();
+    const decoder = new TextDecoder();
+    let full = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const text = decoder.decode(value);
+
+      const lines = text
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+
+      for (const line of lines) {
+        try {
+          const obj = JSON.parse(line);
+          const token = obj.response ?? '';
+          if (token) {
+            full += token;
+            options.onToken?.(token);
+          }
+        } catch {
+          // ignore partial chunks
+        }
+      }
+    }
+    return full;
   }
 }
 
 export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
-    const baseURL = config.localModelUrl?.trim();
-    if (!baseURL) {
-      throw new Error(
-        'localModelUrl is required when using the local provider.\n' +
-          '\n' +
-          'To use a free local language model, you need to set up an OpenAI-compatible server:\n' +
-          '  1. Install Ollama: https://ollama.ai\n' +
-          '  2. Pull a code model: ollama pull qwen2.5-coder:14b\n' +
-          '  3. Set localModelUrl in .agentrc.json: "http://localhost:11434/v1"\n' +
-          '\n' +
-          'Alternatively, you can use any OpenAI-compatible API server by setting localModelUrl to its base URL.\n' +
-          'For OpenAI API, set modelProvider to "openai" and provide OPENAI_API_KEY environment variable.',
-      );
-    }
-    return new OpenAILLM(config.model, config.localModelApiKey ?? 'local-key', baseURL);
+    return new OllamaLLM(config.model, config.localModelUrl || 'http://localhost:11434');
   }
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'OPENAI_API_KEY is required for the openai provider.\n' +
-        '\n' +
-        'To use OpenAI API:\n' +
-        '  1. Get an API key from https://platform.openai.com/api-keys\n' +
-        '  2. Set it as an environment variable: export OPENAI_API_KEY=your-key-here\n' +
-        '\n' +
-        'For a free alternative, use the local provider with an OpenAI-compatible server like Ollama.\n' +
-        'See the error message above for setup instructions.',
-    );
-  }
-  return new OpenAILLM(config.model, apiKey);
+
+  throw new Error('Only local model provider is supported right now.');
 }
