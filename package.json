@@ -12,7 +12,8 @@
     "dev": "tsx src/cli.ts",
     "smoke": "ts-node --transpile-only scripts/smoke.ts",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest"
   },
   "type": "commonjs",
   "keywords": [
@@ -40,7 +41,7 @@
     "@eslint/js": "^9.39.1",
     "@types/better-sqlite3": "^7.6.9",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.7.4",
+    "@types/node": "^22.19.1",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "@typescript-eslint/parser": "^8.47.0",
     "eslint": "^9.39.1",
@@ -52,6 +53,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.47.0",
+    "vitest": "^4.0.14"
   }
 }
