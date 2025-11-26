@@ -1,23 +1,33 @@
-import path from 'node:path';
-import { globby } from 'globby';
-import ora from 'ora';
-import { AgentConfig, FileChunk } from './types';
-import { chunkFile } from './chunker';
-import { createEmbedder } from './embeddings';
-import { VectorStore } from './db';
+import path from "node:path";
+import os from "os";
+import { globby } from "globby";
+import ora from "ora";
+import { AgentConfig, FileChunk } from "./types";
+import { chunkFile } from "./chunker";
+import { createEmbedder } from "./embeddings";
+import { VectorStore } from "./db";
 
-interface IngestOptions {
-  cwd: string;
-  config: AgentConfig;
-  force?: boolean;
+function compressText(text: string, cap = 450) {
+  return text
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, cap);
 }
 
 export async function ingestRepository({
   cwd,
   config,
   force = false,
-}: IngestOptions): Promise<void> {
-  const spinner = ora('Scanning project files').start();
+}: {
+  cwd: string;
+  config: AgentConfig;
+  force?: boolean;
+}) {
+  const spinner = ora("Scanning project files...").start();
+
+  // 1. Scan files
   const files = await globby(config.includeGlobs, {
     cwd,
     gitignore: true,
@@ -26,62 +36,60 @@ export async function ingestRepository({
     onlyFiles: true,
   });
 
-  if (files.length === 0) {
-    spinner.fail('No source files matched the current config globs.');
+  if (!files.length) {
+    spinner.fail("No matching files found.");
     return;
   }
 
-  spinner.text = `Chunking ${files.length} files`;
+  spinner.succeed(`Found ${files.length} files`);
+  console.log("");
+
+  // 2. Chunk
+  console.log("📦 [1/4] Chunking files...");
   const chunks: FileChunk[] = [];
   for (let i = 0; i < files.length; i++) {
-    const absolutePath = files[i];
-    spinner.text = `Chunking file ${i + 1}/${files.length}: ${path.basename(absolutePath)}`;
-    const fileChunks = await chunkFile(absolutePath, config.maxChunkSize, config.chunkOverlap);
-    fileChunks.forEach((chunk) => {
-      chunk.filePath = path.relative(cwd, chunk.filePath);
-    });
-    chunks.push(...fileChunks);
-  }
+    process.stdout.write(`   - ${i + 1}/${files.length} ${path.basename(files[i])}   \r`);
 
-  spinner.text = `Created ${chunks.length} chunks from ${files.length} files`;
-  spinner.text = `Loading embedding model...`;
-
-  let embedder;
-  try {
-    embedder = await createEmbedder(config);
-    if (embedder.preload) {
-      spinner.text = `Loading embedding model (this may take a minute on first run)...`;
-      await embedder.preload();
-    }
-  } catch (error) {
-    spinner.fail('Failed to load embedding model.');
-    throw error;
+    const ch = await chunkFile(files[i], config.maxChunkSize, config.chunkOverlap);
+    ch.forEach((c) => (c.filePath = path.relative(cwd, c.filePath)));
+    chunks.push(...ch);
   }
-  const batchedChunks: FileChunk[] = [];
-  const batchSize = 16;
-  const totalBatches = Math.ceil(chunks.length / batchSize);
+  process.stdout.write("\n");
+  console.log(`   → Created ${chunks.length} chunks\n`);
+
+  // 3. Compression
+  console.log("✂️ [2/4] Compressing chunks...");
+  chunks.forEach((c) => (c.compressed = compressText(c.content)));
+  console.log("   → Compression done\n");
+
+  // 4. Embedding
+  console.log("🧠 [3/4] Embedding chunks...");
+  const embedder = await createEmbedder(config);
+
+  const batchSize = 32;
+  let done = 0;
+
   for (let i = 0; i < chunks.length; i += batchSize) {
-    const batchNum = Math.floor(i / batchSize) + 1;
-    spinner.text = `Embedding chunks ${i + 1}-${Math.min(i + batchSize, chunks.length)} of ${chunks.length} (batch ${batchNum}/${totalBatches})`;
+    const batch = chunks.slice(i, i + batchSize);
+    const texts = batch.map((c) => c.compressed!);
 
-    await new Promise((resolve) => setImmediate(resolve));
+    const vectors = await embedder.embed(texts);
+    batch.forEach((c, idx) => (c.embedding = vectors[idx]));
 
-    const slice = chunks.slice(i, i + batchSize);
-    const embeddings = await embedder.embed(slice.map((chunk) => chunk.content));
-    slice.forEach((chunk, idx) => {
-      chunk.embedding = embeddings[idx];
-    });
-    batchedChunks.push(...slice);
-
-    spinner.text = `Embedded batch ${batchNum}/${totalBatches} (${batchedChunks.length}/${chunks.length} chunks)`;
+    done += batch.length;
+    process.stdout.write(`   - ${done}/${chunks.length} embedded   \r`);
   }
 
-  spinner.text = `Storing ${batchedChunks.length} chunks in database...`;
+  process.stdout.write("\n");
+  console.log("   → Embedding complete\n");
+
+  // 5. Store in DB
+  console.log("💾 [4/4] Storing chunks...");
   const store = new VectorStore(config.dbPath);
   store.init();
-  if (force) {
-    store.clear();
-  }
-  store.insertChunks(batchedChunks);
-  spinner.succeed(`Stored ${batchedChunks.length} chunks for retrieval.`);
+  if (force) store.clear();
+  store.insertChunks(chunks);
+
+  console.log("   → Stored in SQLite");
+  console.log("\n🎉 Ingestion complete!\n");
 }

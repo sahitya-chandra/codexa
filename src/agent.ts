@@ -1,19 +1,19 @@
-import path from 'node:path';
-import fs from 'fs-extra';
-import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { AgentConfig, AskOptions } from './types';
-import { retrieveContext, formatContext } from './retriever';
-import { createLLMClient } from './models';
-
-type ConversationMessage = ChatCompletionMessageParam;
+import path from "node:path";
+import fs from "fs-extra";
+import { retrieveContext, formatContext } from "./retriever";
+import { createLLMClient } from "./models";
+import type { AgentConfig, AskOptions } from "./types";
 
 const SYSTEM_PROMPT = `
-You are Repo Sage, a senior engineer.
-The code context has already been compressed for you.
-Use the SUMMARY sections only. Ignore the content field.
-Never hallucinate file names or functions not in SUMMARY.
-If the answer is not in the summaries, say "context not found".
-Be concise and cite file names.
+You are RepoSage.
+You answer questions about a codebase using ONLY the provided code snippets.
+
+Rules:
+- Use the CODE_SNIPPET sections only.
+- Do NOT hallucinate missing files.
+- If the context does not contain enough information, say:
+  "The provided context does not contain that information."
+- Keep answers short, direct, and technical.
 `;
 
 export async function askQuestion(
@@ -21,74 +21,54 @@ export async function askQuestion(
   config: AgentConfig,
   options: AskOptions,
 ): Promise<string> {
-  const sessionId = options.session ?? 'default';
-  const history = await loadHistory(config.historyDir, sessionId);
-  const matches = await retrieveContext(options.question, config);
+  const { question, session = "default", stream } = options;
+
+  const history = await loadHistory(config.historyDir, session);
+
+  const matches = await retrieveContext(question, config);
   if (matches.length === 0) {
-    throw new Error('No chunks were found in the vector store. Please run `agent ingest` first.');
+    throw new Error("No chunks found. Run `agent ingest` first.");
   }
 
-  console.error(`[DEBUG] Retrieved ${matches.length} context chunks`);
   const context = formatContext(matches);
-  const messages: ConversationMessage[] = [
-    { role: 'system', content: SYSTEM_PROMPT },
+
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
     ...history,
     {
-      role: 'user',
-      content: `
-        You are answering questions about code.
-
-        CONTEXT:
-        ${context}
-
-        QUESTION:
-        ${options.question}
-
-        INSTRUCTIONS:
-        - Use only the SUMMARY text.
-        - If the answer is not found, say "context not found".
-        - Be concise and cite file paths.
-
-        ANSWER:
-      `,
-    },
+      role: "user",
+      content: `CONTEXT:\n${context}\n\nQUESTION: ${question}\nANSWER:`
+    }
   ];
 
-  console.error(`[DEBUG] Creating LLM client for model: ${config.model}`);
-  console.error("[DEBUG] PROMPT LENGTH:", JSON.stringify(messages).length);
   const llm = createLLMClient(config);
-  console.error(`[DEBUG] Generating answer...`);
+  let finalAnswer = "";
+
   const answer = await llm.generate(messages, {
     stream: options.stream,
-    onToken: options.stream ? (token) => process.stdout.write(token) : undefined,
+    onToken: (token) => {
+      finalAnswer += token;
+      if (options.onToken) options.onToken(token);
+    },
   });
-  console.error(`[DEBUG] Answer generated`); 
-  console.error("[DEBUG] ANSWER:", answer);
 
-  await saveHistory(config.historyDir, sessionId, [
-    ...history,
-    { role: 'user', content: options.question },
-    { role: 'assistant', content: answer },
-  ]);
-
-  return answer;
-}
-
-async function loadHistory(historyDir: string, sessionId: string): Promise<ConversationMessage[]> {
-  await fs.ensureDir(historyDir);
-  const filePath = path.join(historyDir, `${sessionId}.json`);
-  if (!(await fs.pathExists(filePath))) {
-    return [];
+  if (!options.stream) {
+    finalAnswer = answer; // non-stream returns whole
   }
-  return (await fs.readJson(filePath)) as ConversationMessage[];
+
+  return finalAnswer;
+
 }
 
-async function saveHistory(
-  historyDir: string,
-  sessionId: string,
-  messages: ConversationMessage[],
-): Promise<void> {
-  await fs.ensureDir(historyDir);
-  const filePath = path.join(historyDir, `${sessionId}.json`);
-  await fs.writeJson(filePath, messages, { spaces: 2 });
+async function loadHistory(dir: string, id: string) {
+  await fs.ensureDir(dir);
+  const file = path.join(dir, `${id}.json`);
+  if (!(await fs.pathExists(file))) return [];
+  return fs.readJson(file);
+}
+
+async function saveHistory(dir: string, id: string, messages: any[]) {
+  await fs.ensureDir(dir);
+  const file = path.join(dir, `${id}.json`);
+  await fs.writeJson(file, messages, { spaces: 2 });
 }

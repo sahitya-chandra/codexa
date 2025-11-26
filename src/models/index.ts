@@ -1,6 +1,7 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import fetch from 'node-fetch';
 import { AgentConfig } from '../types';
+import { Readable } from 'stream';
 
 export interface LLMClient {
   generate(
@@ -9,20 +10,14 @@ export interface LLMClient {
   ): Promise<string>;
 }
 
-/**
- * OLLAMA CLIENT (OpenAI-compatible wrapper)
- */
 class OllamaLLM implements LLMClient {
-  constructor(
-    private model: string,
-    private baseURL: string, // example: http://localhost:11434
-  ) {}
+  constructor(private model: string, private baseURL: string) {}
 
   async generate(
     messages: ChatCompletionMessageParam[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string> {
-    // Turn messages into a single prompt
+    // Build prompt from chat messages
     const prompt = messages
       .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
       .join('\n\n');
@@ -40,54 +35,56 @@ class OllamaLLM implements LLMClient {
     });
 
     if (!resp.ok) {
-      throw new Error(
-        `Ollama request failed: ${resp.status} ${await resp.text()}`,
-      );
+      const text = await resp.text();
+      throw new Error(`Ollama request failed: ${resp.status} ${text}`);
     }
 
     // Non-streaming mode
     if (!options?.stream) {
-      const json = await resp.json();
+      const json: any = await resp.json();
       return json.response ?? json.output ?? '';
     }
 
-    // Streaming mode
-    const reader = resp.body!.getReader();
-    const decoder = new TextDecoder();
+    // STREAMING MODE
+    const stream = resp.body as unknown as Readable;
+    if (!stream) {
+      throw new Error('Streaming not supported on this response body.');
+    }
+
     let full = '';
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      const text = decoder.decode(value);
+    for await (const chunk of stream) {
+      const text = chunk.toString();
 
       const lines = text
         .split('\n')
-        .map((l) => l.trim())
+        .map((l: any) => l.trim())
         .filter(Boolean);
 
       for (const line of lines) {
         try {
-          const obj = JSON.parse(line);
-          const token = obj.response ?? '';
+          const parsed = JSON.parse(line);
+          const token: string = parsed.response ?? '';
           if (token) {
             full += token;
             options.onToken?.(token);
           }
         } catch {
-          // ignore partial chunks
+          // Ignore partial JSON chunks
         }
       }
     }
+
     return full;
   }
 }
 
 export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
-    return new OllamaLLM(config.model, config.localModelUrl || 'http://localhost:11434');
+    const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
+    console.error("[DEBUG] Using Ollama client", config.model, config.localModelUrl);
+    return new OllamaLLM(config.model, base);
   }
 
-  throw new Error('Only local model provider is supported right now.');
+  throw new Error('Only local provider supported for now.');
 }

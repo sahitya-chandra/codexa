@@ -3,7 +3,6 @@ import fs from 'fs-extra';
 import Database from 'better-sqlite3';
 import { FileChunk, RetrievalResult } from './types';
 
-// Optimized cosine similarity computation
 function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length !== b.length) {
     return 0;
@@ -11,7 +10,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   let dot = 0;
   let normA = 0;
   let normB = 0;
-  // Use a single loop for better cache locality
+  // single loop for better cache locality
   const len = a.length;
   for (let i = 0; i < len; i++) {
     const ai = a[i];
@@ -23,7 +22,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   if (normA === 0 || normB === 0) {
     return 0;
   }
-  // Pre-compute sqrt values once
+  // Pre-compute sqrt values
   const sqrtNormA = Math.sqrt(normA);
   const sqrtNormB = Math.sqrt(normB);
   return dot / (sqrtNormA * sqrtNormB);
@@ -35,6 +34,7 @@ interface ChunkRow {
   start_line: number;
   end_line: number;
   content: string;
+  compressed: string | null;
   embedding: string;
 }
 
@@ -59,6 +59,7 @@ export class VectorStore {
           start_line INTEGER NOT NULL,
           end_line INTEGER NOT NULL,
           content TEXT NOT NULL,
+          compressed TEXT,
           embedding TEXT NOT NULL
         )`,
       )
@@ -73,8 +74,8 @@ export class VectorStore {
   insertChunks(chunks: FileChunk[]): void {
     const db = this.connection;
     const insert = db.prepare(
-      `INSERT INTO chunks (file_path, start_line, end_line, content, embedding)
-       VALUES (@filePath, @startLine, @endLine, @content, @embedding)`,
+      `INSERT INTO chunks (file_path, start_line, end_line, content, compressed, embedding)
+      VALUES (@filePath, @startLine, @endLine, @content, @compressed, @embedding)`,
     );
     const tx = db.transaction((rows: FileChunk[]) => {
       rows.forEach((chunk) => {
@@ -86,6 +87,7 @@ export class VectorStore {
           startLine: chunk.startLine,
           endLine: chunk.endLine,
           content: chunk.content,
+          compressed: chunk.compressed ?? "",
           embedding: JSON.stringify(chunk.embedding),
         });
       });
@@ -126,8 +128,9 @@ export class VectorStore {
         startLine: row.start_line,
         endLine: row.end_line,
         content: row.content,
+        compressed: row.compressed ?? "",
         embedding,
-        score,
+        score
       };
       
       // If we have fewer than topK results, just add it

@@ -44,10 +44,10 @@ class LocalEmbedder implements Embedder {
     if (!this.pipelinePromise) {
       this.pipelinePromise = (async () => {
         try {
-          console.error(`[DEBUG] Importing @xenova/transformers...`);
+          console.error("[DEBUG] Importing @xenova/transformers...\n");
           const transformersModule = await import('@xenova/transformers');
           const { pipeline } = transformersModule;
-          console.error(`[DEBUG] Creating pipeline for model: ${this.model}`);
+          console.error(`[DEBUG] Creating pipeline for model: ${this.model}\n`);
           this.pipeline = await pipeline('feature-extraction', this.model);
           console.error(`[DEBUG] Pipeline created successfully`);
           return this.pipeline;
@@ -61,15 +61,15 @@ class LocalEmbedder implements Embedder {
   }
 
   async preload(): Promise<void> {
-    console.error(`[DEBUG] Preloading embedding model...`);
+    console.error("[DEBUG] Preloading embedding model...\n");
     await this.getPipeline();
-    console.error(`[DEBUG] Embedding model preloaded`);
+    console.error(`[DEBUG] Embedding model preloaded\n`);
   }
 
   async embed(texts: string[]): Promise<number[][]> {
     const pipe = await this.getPipeline();
 
-    // Process all texts in parallel for much better performance
+    // process all texts in parallel for much better perf
     const embeddingPromises = texts.map(async (text) => {
       const output = await pipe(text, {
         pooling: 'mean',

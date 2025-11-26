@@ -29,7 +29,7 @@ program
   .action(async (options: { force?: boolean }) => {
     const cwd = process.cwd();
     const config = await ensureConfig(cwd);
-    const spinner = ora('Starting ingestion').start();
+    const spinner = ora('Starting ingestion\n').start();
     try {
       await ingestRepository({ cwd, config, force: options.force });
       spinner.succeed('Ingestion complete.');
@@ -49,23 +49,33 @@ program
     const cwd = process.cwd();
     const config = await loadConfig(cwd);
     const prompt = question.join(' ');
-    const spinner = ora('Retrieving context').start();
+
+    // Commander behavior:
+    //   default: stream = true
+    //   --no-stream => stream = false
+    const stream = options.stream !== false;
+
+    const spinner = ora('Retrieving context...').start();
+
     try {
       const answer = await askQuestion(cwd, config, {
         question: prompt,
         session: options.session,
-        stream: options.stream ?? true,
+        stream,
+        onToken: stream
+          ? (token) => {
+              spinner.stop();            // stop spinner before printing
+              process.stdout.write(token);
+            }
+          : undefined,
         onStatusUpdate: (status) => {
-          spinner.text = status;
-        },
+          if (!stream) spinner.text = status;
+        }
       });
-      if (!options.stream) {
-        spinner.stop();
-        console.log(answer);
-      } else {
-        spinner.stop();
-        console.log('\n');
-      }
+
+      spinner.stop();
+
+      console.log("\n" + answer.trim() + "\n");
     } catch (error) {
       spinner.fail('Question failed.');
       handleError(error);

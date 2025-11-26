@@ -1,4 +1,4 @@
-export type ModelProvider = 'openai' | 'local' | 'openai-compatible';
+export type ModelProvider = 'openai' | 'local';
 export type EmbeddingProvider = 'openai' | 'local';
 
 export interface AgentConfig {
@@ -25,6 +25,7 @@ export interface FileChunk {
   startLine: number;
   endLine: number;
   content: string;
+  compressed?: string;
   embedding?: number[];
 }
 
@@ -37,4 +38,5 @@ export interface AskOptions {
   stream: boolean;
   session?: string;
   onStatusUpdate?: (status: string) => void;
+  onToken?: (token: string) => void;
 }
