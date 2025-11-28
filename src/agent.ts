@@ -53,7 +53,7 @@ export async function askQuestion(
   });
 
   if (!options.stream) {
-    finalAnswer = answer; // non-stream returns whole
+    finalAnswer = answer;
   }
 
   return finalAnswer;

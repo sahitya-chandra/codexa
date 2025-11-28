@@ -44,12 +44,10 @@ class LocalEmbedder implements Embedder {
     if (!this.pipelinePromise) {
       this.pipelinePromise = (async () => {
         try {
-          console.error("[DEBUG] Importing @xenova/transformers...\n");
           const transformersModule = await import('@xenova/transformers');
           const { pipeline } = transformersModule;
-          console.error(`[DEBUG] Creating pipeline for model: ${this.model}\n`);
           this.pipeline = await pipeline('feature-extraction', this.model);
-          console.error(`[DEBUG] Pipeline created successfully`);
+          // console.log(`Pipeline created successfully with ${this.model}`);
           return this.pipeline;
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
@@ -61,15 +59,13 @@ class LocalEmbedder implements Embedder {
   }
 
   async preload(): Promise<void> {
-    console.error("[DEBUG] Preloading embedding model...\n");
     await this.getPipeline();
-    console.error(`[DEBUG] Embedding model preloaded\n`);
+    console.error(`Embedding model preloaded\n`);
   }
 
   async embed(texts: string[]): Promise<number[][]> {
     const pipe = await this.getPipeline();
 
-    // process all texts in parallel for much better perf
     const embeddingPromises = texts.map(async (text) => {
       const output = await pipe(text, {
         pooling: 'mean',
@@ -80,8 +76,6 @@ class LocalEmbedder implements Embedder {
 
     return Promise.all(embeddingPromises);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private extractEmbedding(output: any): number[] {
     const data = output?.data;
     if (data) {
@@ -90,10 +84,8 @@ class LocalEmbedder implements Embedder {
       } else if (data instanceof Float32Array || data instanceof Float64Array) {
         return Array.from(data);
       } else if (typeof data === 'object' && 'tolist' in data) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (data as any).tolist();
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return Array.from(data as any);
       }
     } else if (Array.isArray(output)) {

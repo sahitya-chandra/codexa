@@ -17,7 +17,7 @@ class OllamaLLM implements LLMClient {
     messages: ChatCompletionMessageParam[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string> {
-    // Build prompt from chat messages
+
     const prompt = messages
       .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
       .join('\n\n');
@@ -39,13 +39,11 @@ class OllamaLLM implements LLMClient {
       throw new Error(`Ollama request failed: ${resp.status} ${text}`);
     }
 
-    // Non-streaming mode
     if (!options?.stream) {
       const json: any = await resp.json();
       return json.response ?? json.output ?? '';
     }
 
-    // STREAMING MODE
     const stream = resp.body as unknown as Readable;
     if (!stream) {
       throw new Error('Streaming not supported on this response body.');
@@ -82,7 +80,7 @@ class OllamaLLM implements LLMClient {
 export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
     const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
-    console.error("[DEBUG] Using Ollama client", config.model, config.localModelUrl);
+    console.error("Using Ollama client", config.model, config.localModelUrl);
     return new OllamaLLM(config.model, base);
   }
 

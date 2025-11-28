@@ -29,12 +29,10 @@ program
   .action(async (options: { force?: boolean }) => {
     const cwd = process.cwd();
     const config = await ensureConfig(cwd);
-    const spinner = ora('Starting ingestion\n').start();
     try {
       await ingestRepository({ cwd, config, force: options.force });
-      spinner.succeed('Ingestion complete.');
     } catch (error) {
-      spinner.fail('Ingestion failed.');
+      console.log('Ingestion failed.');
       handleError(error);
     }
   });
@@ -64,7 +62,7 @@ program
         stream,
         onToken: stream
           ? (token) => {
-              spinner.stop();            // stop spinner before printing
+              spinner.stop();
               process.stdout.write(token);
             }
           : undefined,

@@ -1,11 +1,10 @@
 import path from "node:path";
-import os from "os";
 import { globby } from "globby";
-import ora from "ora";
 import { AgentConfig, FileChunk } from "./types";
 import { chunkFile } from "./chunker";
 import { createEmbedder } from "./embeddings";
 import { VectorStore } from "./db";
+import ora from "ora";
 
 function compressText(text: string, cap = 450) {
   return text
@@ -14,6 +13,10 @@ function compressText(text: string, cap = 450) {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, cap);
+}
+
+function tick() {
+  return new Promise((resolve) => setImmediate(resolve));
 }
 
 export async function ingestRepository({
@@ -25,9 +28,8 @@ export async function ingestRepository({
   config: AgentConfig;
   force?: boolean;
 }) {
-  const spinner = ora("Scanning project files...").start();
 
-  // 1. Scan files
+  const spinnerFiles = ora("Finding files...").start();
   const files = await globby(config.includeGlobs, {
     cwd,
     gitignore: true,
@@ -37,59 +39,48 @@ export async function ingestRepository({
   });
 
   if (!files.length) {
-    spinner.fail("No matching files found.");
+    spinnerFiles.fail("No matching files found.");
     return;
   }
+  spinnerFiles.succeed(`Found ${files.length} files`);
 
-  spinner.succeed(`Found ${files.length} files`);
-  console.log("");
-
-  // 2. Chunk
-  console.log("📦 [1/4] Chunking files...");
+  const spinnerChunk = ora("Chunking files...").start();
   const chunks: FileChunk[] = [];
-  for (let i = 0; i < files.length; i++) {
-    process.stdout.write(`   - ${i + 1}/${files.length} ${path.basename(files[i])}   \r`);
 
-    const ch = await chunkFile(files[i], config.maxChunkSize, config.chunkOverlap);
+  for (const file of files) {
+    const ch = await chunkFile(file, config.maxChunkSize, config.chunkOverlap);
     ch.forEach((c) => (c.filePath = path.relative(cwd, c.filePath)));
     chunks.push(...ch);
+
+    await tick();
   }
-  process.stdout.write("\n");
-  console.log(`   → Created ${chunks.length} chunks\n`);
+  spinnerChunk.succeed(`Chunked files (${chunks.length} chunks)`);
 
-  // 3. Compression
-  console.log("✂️ [2/4] Compressing chunks...");
+  const spinnerCompress = ora("Compressing chunks...").start();
   chunks.forEach((c) => (c.compressed = compressText(c.content)));
-  console.log("   → Compression done\n");
+  spinnerCompress.succeed("Compression complete");
 
-  // 4. Embedding
-  console.log("🧠 [3/4] Embedding chunks...");
+  const spinnerEmbed = ora("Embedding chunks...").start();
   const embedder = await createEmbedder(config);
 
   const batchSize = 32;
-  let done = 0;
-
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batch = chunks.slice(i, i + batchSize);
     const texts = batch.map((c) => c.compressed!);
-
     const vectors = await embedder.embed(texts);
     batch.forEach((c, idx) => (c.embedding = vectors[idx]));
 
-    done += batch.length;
-    process.stdout.write(`   - ${done}/${chunks.length} embedded   \r`);
+    await tick();
   }
+  spinnerEmbed.succeed("Embedding complete");
 
-  process.stdout.write("\n");
-  console.log("   → Embedding complete\n");
-
-  // 5. Store in DB
-  console.log("💾 [4/4] Storing chunks...");
+  const spinnerStore = ora("Storing chunks...").start();
   const store = new VectorStore(config.dbPath);
   store.init();
   if (force) store.clear();
   store.insertChunks(chunks);
 
-  console.log("   → Stored in SQLite");
-  console.log("\n🎉 Ingestion complete!\n");
+  spinnerStore.succeed("Stored successfully");
+
+  ora().succeed("Ingestion complete!");
 }

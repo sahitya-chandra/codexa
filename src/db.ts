@@ -10,7 +10,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   let dot = 0;
   let normA = 0;
   let normB = 0;
-  // single loop for better cache locality
+
   const len = a.length;
   for (let i = 0; i < len; i++) {
     const ai = a[i];
@@ -22,7 +22,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   if (normA === 0 || normB === 0) {
     return 0;
   }
-  // Pre-compute sqrt values
+
   const sqrtNormA = Math.sqrt(normA);
   const sqrtNormB = Math.sqrt(normB);
   return dot / (sqrtNormA * sqrtNormB);
@@ -103,22 +103,19 @@ export class VectorStore {
       return [];
     }
     
-    // Log progress for large databases
     if (rows.length > 1000) {
-      console.error(`[DEBUG] Searching through ${rows.length} chunks...`);
+      console.error(`Searching through ${rows.length} chunks...`);
     }
     
-    // Use a min-heap approach: keep only the top K results
-    // This avoids sorting all results when we only need top K
+    // min-heap approach: keep only the top K results
+    // avoids sorting all results
     const topResults: RetrievalResult[] = [];
     const minScore = { value: -Infinity };
     
     for (const row of rows) {
-      // Parse embedding once
       const embedding = JSON.parse(row.embedding) as number[];
       const score = cosineSimilarity(queryEmbedding, embedding);
       
-      // Early skip if score is too low and we already have topK results
       if (topResults.length >= topK && score <= minScore.value) {
         continue;
       }
@@ -133,32 +130,28 @@ export class VectorStore {
         score
       };
       
-      // If we have fewer than topK results, just add it
       if (topResults.length < topK) {
         topResults.push(result);
-        // Update min score
+
         if (result.score < minScore.value) {
           minScore.value = result.score;
         }
-        // Sort only when we reach topK
+
         if (topResults.length === topK) {
           topResults.sort((a, b) => a.score - b.score);
           minScore.value = topResults[0].score;
         }
       } else if (score > minScore.value) {
-        // Replace the minimum score result
+
         topResults[0] = result;
-        // Re-sort to maintain min-heap property
-        // For small topK (typically 8), this is efficient
         topResults.sort((a, b) => a.score - b.score);
         minScore.value = topResults[0].score;
       }
     }
     
-    // Return in descending order of score
     const finalResults = topResults.sort((a, b) => b.score - a.score);
     if (rows.length > 1000) {
-      console.error(`[DEBUG] Search complete, returning top ${finalResults.length} results`);
+      console.error(`Search complete, returning top ${finalResults.length} results`);
     }
     return finalResults;
   }
