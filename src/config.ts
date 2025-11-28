@@ -32,7 +32,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   historyDir: '.agent/sessions',
   dbPath: '.agent/index.db',
   temperature: 0.2,
-  topK: 8,
+  topK: 4,
 };
 
 export async function ensureConfig(cwd: string): Promise<AgentConfig> {
