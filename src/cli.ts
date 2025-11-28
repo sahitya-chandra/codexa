@@ -62,7 +62,7 @@ program
         stream,
         onToken: stream
           ? (token) => {
-              spinner.stop();
+              if (spinner.isSpinning) spinner.stop();
               process.stdout.write(token);
             }
           : undefined,
@@ -73,7 +73,11 @@ program
 
       spinner.stop();
 
-      console.log("\n" + answer.trim() + "\n");
+      if (!stream) {
+        console.log("\n" + answer.trim() + "\n");
+      } else {
+        console.log("\n");
+      }
     } catch (error) {
       spinner.fail('Question failed.');
       handleError(error);

@@ -51,25 +51,41 @@ class OllamaLLM implements LLMClient {
 
     let full = '';
 
-    for await (const chunk of stream) {
-      const text = chunk.toString();
+    let buffer = '';
 
-      const lines = text
-        .split('\n')
-        .map((l: any) => l.trim())
-        .filter(Boolean);
+    for await (const chunk of stream) {
+      buffer += chunk.toString();
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
 
       for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
         try {
-          const parsed = JSON.parse(line);
+          const parsed = JSON.parse(trimmed);
           const token: string = parsed.response ?? '';
           if (token) {
             full += token;
             options.onToken?.(token);
           }
-        } catch {
-          // Ignore partial JSON chunks
+        } catch (e) {
+          // Should not happen with proper buffering, but ignore if it does
         }
+      }
+    }
+
+    // Process any remaining buffer
+    if (buffer.trim()) {
+      try {
+        const parsed = JSON.parse(buffer.trim());
+        const token: string = parsed.response ?? '';
+        if (token) {
+          full += token;
+          options.onToken?.(token);
+        }
+      } catch {
+        // Ignore incomplete final chunk
       }
     }
 
@@ -80,7 +96,10 @@ class OllamaLLM implements LLMClient {
 export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
     const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
-    console.error("Using Ollama client", config.model, config.localModelUrl);
+    if (process.env.AGENT_DEBUG) {
+      console.error("Using Ollama client:", config.model, config.localModelUrl);
+    }
+    
     return new OllamaLLM(config.model, base);
   }
 
