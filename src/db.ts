@@ -87,7 +87,7 @@ export class VectorStore {
           startLine: chunk.startLine,
           endLine: chunk.endLine,
           content: chunk.content,
-          compressed: chunk.compressed ?? "",
+          compressed: chunk.compressed ?? '',
           embedding: JSON.stringify(chunk.embedding),
         });
       });
@@ -98,38 +98,38 @@ export class VectorStore {
   search(queryEmbedding: number[], topK: number): RetrievalResult[] {
     const db = this.connection;
     const rows = db.prepare('SELECT * FROM chunks').all() as ChunkRow[];
-    
+
     if (rows.length === 0) {
       return [];
     }
-    
-    if (rows.length > 1000) {
-      console.error(`Searching through ${rows.length} chunks...`);
-    }
-    
+
+    // if (rows.length > 1000) {
+    //   console.error(`Searching through ${rows.length} chunks...`);
+    // }
+
     // min-heap approach: keep only the top K results
     // avoids sorting all results
     const topResults: RetrievalResult[] = [];
     const minScore = { value: -Infinity };
-    
+
     for (const row of rows) {
       const embedding = JSON.parse(row.embedding) as number[];
       const score = cosineSimilarity(queryEmbedding, embedding);
-      
+
       if (topResults.length >= topK && score <= minScore.value) {
         continue;
       }
-      
+
       const result: RetrievalResult = {
         filePath: row.file_path,
         startLine: row.start_line,
         endLine: row.end_line,
         content: row.content,
-        compressed: row.compressed ?? "",
+        compressed: row.compressed ?? '',
         embedding,
-        score
+        score,
       };
-      
+
       if (topResults.length < topK) {
         topResults.push(result);
 
@@ -142,17 +142,16 @@ export class VectorStore {
           minScore.value = topResults[0].score;
         }
       } else if (score > minScore.value) {
-
         topResults[0] = result;
         topResults.sort((a, b) => a.score - b.score);
         minScore.value = topResults[0].score;
       }
     }
-    
+
     const finalResults = topResults.sort((a, b) => b.score - a.score);
-    if (rows.length > 1000) {
-      console.error(`Search complete, returning top ${finalResults.length} results`);
-    }
+    // if (rows.length > 1000) {
+    //   console.error(`Search complete, returning top ${finalResults.length} results`);
+    // }
     return finalResults;
   }
 

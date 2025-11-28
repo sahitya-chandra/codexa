@@ -68,15 +68,15 @@ program
           : undefined,
         onStatusUpdate: (status) => {
           if (!stream) spinner.text = status;
-        }
+        },
       });
 
       spinner.stop();
 
       if (!stream) {
-        console.log("\n" + answer.trim() + "\n");
+        console.log('\n' + answer.trim() + '\n');
       } else {
-        console.log("\n");
+        console.log('\n');
       }
     } catch (error) {
       spinner.fail('Question failed.');

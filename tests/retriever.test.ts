@@ -15,18 +15,24 @@ describe('retriever', () => {
     const mockEmbedder = {
       embed: vi.fn().mockResolvedValue([[0.1, 0.2]]),
     };
-    vi.mocked(createEmbedder).mockResolvedValue(mockEmbedder as any);
+    vi.mocked(createEmbedder).mockResolvedValue(
+      mockEmbedder as unknown as import('../src/embeddings').Embedder,
+    );
 
     const mockStore = {
       init: vi.fn(),
       search: vi.fn().mockReturnValue([{ content: 'match' }]),
     };
-    (VectorStore as any).mockImplementation(function() { return mockStore; });
+    (
+      VectorStore as unknown as { mockImplementation: (fn: () => typeof mockStore) => void }
+    ).mockImplementation(function () {
+      return mockStore;
+    });
 
     const config = {
       dbPath: 'test.db',
       topK: 5,
-    } as any;
+    } as unknown as import('../src/types').AgentConfig;
 
     const results = await retrieveContext('query', config);
 
@@ -55,7 +61,7 @@ describe('retriever', () => {
       },
     ];
 
-    const formatted = formatContext(results as any);
+    const formatted = formatContext(results as unknown as import('../src/types').RetrievalResult[]);
 
     expect(formatted).toContain('FILE: file1.ts:1-5');
     expect(formatted).toContain('CODE_SNIPPET: code1');

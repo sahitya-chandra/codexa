@@ -1,10 +1,10 @@
-import { AgentConfig, RetrievalResult } from "./types";
-import { createEmbedder } from "./embeddings";
-import { VectorStore } from "./db";
+import { AgentConfig, RetrievalResult } from './types';
+import { createEmbedder } from './embeddings';
+import { VectorStore } from './db';
 
 export async function retrieveContext(
   question: string,
-  config: AgentConfig
+  config: AgentConfig,
 ): Promise<RetrievalResult[]> {
   const embedder = await createEmbedder(config);
   const [qvec] = await embedder.embed([question]);
@@ -21,5 +21,5 @@ export function formatContext(results: RetrievalResult[]): string {
       return `FILE: ${r.filePath}:${r.startLine}-${r.endLine}
 CODE_SNIPPET: ${snippet}`;
     })
-    .join("\n\n---\n\n");
+    .join('\n\n---\n\n');
 }

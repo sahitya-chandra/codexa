@@ -12,10 +12,10 @@ describe('chunker', () => {
 
   it('should chunk a file correctly based on maxChunkSize', async () => {
     const mockContent = 'line1\nline2\nline3\nline4\nline5';
-    const mockStream = Readable.from(mockContent.split('\n').map(l => l + '\n'));
-    
+    const mockStream = Readable.from(mockContent.split('\n').map((l) => l + '\n'));
+
     // Mock fs.createReadStream to return our readable stream
-    vi.mocked(fs.createReadStream).mockReturnValue(mockStream as any);
+    vi.mocked(fs.createReadStream).mockReturnValue(mockStream as unknown as fs.ReadStream);
 
     // maxChunkSize small enough to force splitting
     // line1\n = 6 chars
@@ -31,8 +31,8 @@ describe('chunker', () => {
 
   it('should handle overlap correctly', async () => {
     const mockContent = 'line1\nline2\nline3\nline4';
-    const mockStream = Readable.from(mockContent.split('\n').map(l => l + '\n'));
-    vi.mocked(fs.createReadStream).mockReturnValue(mockStream as any);
+    const mockStream = Readable.from(mockContent.split('\n').map((l) => l + '\n'));
+    vi.mocked(fs.createReadStream).mockReturnValue(mockStream as unknown as fs.ReadStream);
 
     // Chunk size small, overlap large enough to include previous line
     const chunks = await chunkFile('test.txt', 10, 5);

@@ -94,6 +94,7 @@ npm link # Optional: exposes `agent` command globally
     ```
 
     **Note**: Ensure Ollama is running and the configured model (default: `qwen2.5:3b-instruct`) is pulled:
+
     ```bash
     ollama pull qwen2.5:3b-instruct
     ```
@@ -102,18 +103,18 @@ npm link # Optional: exposes `agent` command globally
 
 The `.agentrc.json` file allows you to fine-tune the agent's behavior:
 
-| Field               | Description                                      | Default                       |
-| :------------------ | :----------------------------------------------- | :---------------------------- |
-| `modelProvider`     | `local` (Only local supported currently).        | `local`                       |
-| `model`             | Model ID (e.g., `qwen2.5:3b-instruct`).          | `qwen2.5:3b-instruct`         |
-| `localModelUrl`     | Base URL for local model server.                 | `http://localhost:11434`      |
-| `embeddingProvider` | `openai` or `local`.                             | `local`                       |
-| `embeddingModel`    | Embedding model ID.                              | `Xenova/all-MiniLM-L6-v2`     |
-| `includeGlobs`      | Patterns for files to include.                   | `["**/*.ts", "**/*.js", ...]` |
-| `excludeGlobs`      | Patterns for files to exclude.                   | `["**/node_modules/**", ...]` |
-| `maxChunkSize`      | Maximum characters per chunk.                    | `600`                         |
-| `chunkOverlap`      | Overlap between chunks.                          | `80`                          |
-| `topK`              | Number of chunks to retrieve.                    | `8`                           |
+| Field               | Description                               | Default                       |
+| :------------------ | :---------------------------------------- | :---------------------------- |
+| `modelProvider`     | `local` (Only local supported currently). | `local`                       |
+| `model`             | Model ID (e.g., `qwen2.5:3b-instruct`).   | `qwen2.5:3b-instruct`         |
+| `localModelUrl`     | Base URL for local model server.          | `http://localhost:11434`      |
+| `embeddingProvider` | `openai` or `local`.                      | `local`                       |
+| `embeddingModel`    | Embedding model ID.                       | `Xenova/all-MiniLM-L6-v2`     |
+| `includeGlobs`      | Patterns for files to include.            | `["**/*.ts", "**/*.js", ...]` |
+| `excludeGlobs`      | Patterns for files to exclude.            | `["**/node_modules/**", ...]` |
+| `maxChunkSize`      | Maximum characters per chunk.             | `600`                         |
+| `chunkOverlap`      | Overlap between chunks.                   | `80`                          |
+| `topK`              | Number of chunks to retrieve.             | `8`                           |
 
 ## 🧪 Development
 

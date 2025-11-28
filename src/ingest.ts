@@ -1,16 +1,16 @@
-import path from "node:path";
-import { globby } from "globby";
-import { AgentConfig, FileChunk } from "./types";
-import { chunkFile } from "./chunker";
-import { createEmbedder } from "./embeddings";
-import { VectorStore } from "./db";
-import ora from "ora";
+import path from 'node:path';
+import { globby } from 'globby';
+import { AgentConfig, FileChunk } from './types';
+import { chunkFile } from './chunker';
+import { createEmbedder } from './embeddings';
+import { VectorStore } from './db';
+import ora from 'ora';
 
 function compressText(text: string, cap = 450) {
   return text
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\/\/.*/g, "")
-    .replace(/\s+/g, " ")
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*/g, '')
+    .replace(/\s+/g, ' ')
     .trim()
     .slice(0, cap);
 }
@@ -28,8 +28,7 @@ export async function ingestRepository({
   config: AgentConfig;
   force?: boolean;
 }) {
-
-  const spinnerFiles = ora("Finding files...").start();
+  const spinnerFiles = ora('Finding files...').start();
   const files = await globby(config.includeGlobs, {
     cwd,
     gitignore: true,
@@ -39,12 +38,12 @@ export async function ingestRepository({
   });
 
   if (!files.length) {
-    spinnerFiles.fail("No matching files found.");
+    spinnerFiles.fail('No matching files found.');
     return;
   }
   spinnerFiles.succeed(`Found ${files.length} files`);
 
-  const spinnerChunk = ora("Chunking files...").start();
+  const spinnerChunk = ora('Chunking files...').start();
   const chunks: FileChunk[] = [];
 
   for (const file of files) {
@@ -56,11 +55,11 @@ export async function ingestRepository({
   }
   spinnerChunk.succeed(`Chunked files (${chunks.length} chunks)`);
 
-  const spinnerCompress = ora("Compressing chunks...").start();
+  const spinnerCompress = ora('Compressing chunks...').start();
   chunks.forEach((c) => (c.compressed = compressText(c.content)));
-  spinnerCompress.succeed("Compression complete");
+  spinnerCompress.succeed('Compression complete');
 
-  const spinnerEmbed = ora("Embedding chunks...").start();
+  const spinnerEmbed = ora('Embedding chunks...').start();
   const embedder = await createEmbedder(config);
 
   const batchSize = 32;
@@ -72,15 +71,15 @@ export async function ingestRepository({
 
     await tick();
   }
-  spinnerEmbed.succeed("Embedding complete");
+  spinnerEmbed.succeed('Embedding complete');
 
-  const spinnerStore = ora("Storing chunks...").start();
+  const spinnerStore = ora('Storing chunks...').start();
   const store = new VectorStore(config.dbPath);
   store.init();
   if (force) store.clear();
   store.insertChunks(chunks);
 
-  spinnerStore.succeed("Stored successfully");
+  spinnerStore.succeed('Stored successfully');
 
-  ora().succeed("Ingestion complete!");
+  ora().succeed('Ingestion complete!');
 }

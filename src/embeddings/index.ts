@@ -76,20 +76,20 @@ class LocalEmbedder implements Embedder {
 
     return Promise.all(embeddingPromises);
   }
-  private extractEmbedding(output: any): number[] {
-    const data = output?.data;
+  private extractEmbedding(output: unknown): number[] {
+    const data = (output as { data?: unknown })?.data;
     if (data) {
       if (Array.isArray(data)) {
-        return data;
+        return data as number[];
       } else if (data instanceof Float32Array || data instanceof Float64Array) {
         return Array.from(data);
-      } else if (typeof data === 'object' && 'tolist' in data) {
-        return (data as any).tolist();
+      } else if (typeof data === 'object' && data !== null && 'tolist' in data) {
+        return (data as { tolist: () => number[] }).tolist();
       } else {
-        return Array.from(data as any);
+        return Array.from(data as ArrayLike<number>);
       }
     } else if (Array.isArray(output)) {
-      return output;
+      return output as number[];
     } else {
       throw new Error(`Unexpected output format from embedding model`);
     }

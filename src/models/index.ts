@@ -11,16 +11,16 @@ export interface LLMClient {
 }
 
 class OllamaLLM implements LLMClient {
-  constructor(private model: string, private baseURL: string) {}
+  constructor(
+    private model: string,
+    private baseURL: string,
+  ) {}
 
   async generate(
     messages: ChatCompletionMessageParam[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string> {
-
-    const prompt = messages
-      .map((m) => `${m.role.toUpperCase()}: ${m.content}`)
-      .join('\n\n');
+    const prompt = messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
 
     const body = {
       model: this.model,
@@ -40,8 +40,12 @@ class OllamaLLM implements LLMClient {
     }
 
     if (!options?.stream) {
-      const json: any = await resp.json();
-      return json.response ?? json.output ?? '';
+      const json: unknown = await resp.json();
+      return (
+        (json as { response?: string; output?: string }).response ??
+        (json as { response?: string; output?: string }).output ??
+        ''
+      );
     }
 
     const stream = resp.body as unknown as Readable;
@@ -69,7 +73,7 @@ class OllamaLLM implements LLMClient {
             full += token;
             options.onToken?.(token);
           }
-        } catch (e) {
+        } catch {
           // Should not happen with proper buffering, but ignore if it does
         }
       }
@@ -97,9 +101,9 @@ export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
     const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
     if (process.env.AGENT_DEBUG) {
-      console.error("Using Ollama client:", config.model, config.localModelUrl);
+      console.error('Using Ollama client:', config.model, config.localModelUrl);
     }
-    
+
     return new OllamaLLM(config.model, base);
   }
 

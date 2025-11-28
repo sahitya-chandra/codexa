@@ -13,6 +13,7 @@ describe('config', () => {
   });
 
   it('should create default config if not exists', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(fs.pathExists).mockResolvedValue(false as any);
     vi.mocked(fs.writeJson).mockResolvedValue(undefined);
     vi.mocked(fs.readJson).mockResolvedValue({}); // Mock readJson to return empty object for merging
@@ -22,11 +23,12 @@ describe('config', () => {
     expect(fs.writeJson).toHaveBeenCalledWith(
       path.join(mockCwd, '.agentrc.json'),
       expect.objectContaining({ modelProvider: 'local' }),
-      expect.anything()
+      expect.anything(),
     );
   });
 
   it('should load existing config', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.mocked(fs.pathExists).mockResolvedValue(true as any);
     vi.mocked(fs.readJson).mockResolvedValue({
       modelProvider: 'openai',

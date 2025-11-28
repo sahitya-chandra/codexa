@@ -1,8 +1,8 @@
-import path from "node:path";
-import fs from "fs-extra";
-import { retrieveContext, formatContext } from "./retriever";
-import { createLLMClient } from "./models";
-import type { AgentConfig, AskOptions } from "./types";
+import path from 'node:path';
+import fs from 'fs-extra';
+import { retrieveContext, formatContext } from './retriever';
+import { createLLMClient } from './models';
+import type { AgentConfig, AskOptions } from './types';
 
 const SYSTEM_PROMPT = `
 You are RepoSage.
@@ -21,28 +21,28 @@ export async function askQuestion(
   config: AgentConfig,
   options: AskOptions,
 ): Promise<string> {
-  const { question, session = "default", stream } = options;
+  const { question, session = 'default' } = options;
 
   const history = await loadHistory(config.historyDir, session);
 
   const matches = await retrieveContext(question, config);
   if (matches.length === 0) {
-    throw new Error("No chunks found. Run `agent ingest` first.");
+    throw new Error('No chunks found. Run `agent ingest` first.');
   }
 
   const context = formatContext(matches);
 
   const messages = [
-    { role: "system", content: SYSTEM_PROMPT },
+    { role: 'system', content: SYSTEM_PROMPT },
     ...history,
     {
-      role: "user",
-      content: `CONTEXT:\n${context}\n\nQUESTION: ${question}\nANSWER:`
-    }
+      role: 'user',
+      content: `CONTEXT:\n${context}\n\nQUESTION: ${question}\nANSWER:`,
+    },
   ];
 
   const llm = createLLMClient(config);
-  let finalAnswer = "";
+  let finalAnswer = '';
 
   const answer = await llm.generate(messages, {
     stream: options.stream,
@@ -57,7 +57,6 @@ export async function askQuestion(
   }
 
   return finalAnswer;
-
 }
 
 async function loadHistory(dir: string, id: string) {
@@ -67,8 +66,8 @@ async function loadHistory(dir: string, id: string) {
   return fs.readJson(file);
 }
 
-async function saveHistory(dir: string, id: string, messages: any[]) {
-  await fs.ensureDir(dir);
-  const file = path.join(dir, `${id}.json`);
-  await fs.writeJson(file, messages, { spaces: 2 });
-}
+// async function saveHistory(dir: string, id: string, messages: any[]) {
+//   await fs.ensureDir(dir);
+//   const file = path.join(dir, `${id}.json`);
+//   await fs.writeJson(file, messages, { spaces: 2 });
+// }
