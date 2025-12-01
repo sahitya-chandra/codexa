@@ -5,7 +5,7 @@ import { AgentConfig } from './types';
 
 dotenv.config();
 
-const CONFIG_FILENAME = '.agentrc.json';
+const CONFIG_FILENAME = '.guardianrc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'local',
@@ -14,8 +14,8 @@ const DEFAULT_CONFIG: AgentConfig = {
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   localModelUrl: 'http://localhost:11434',
   localModelApiKey: '',
-  maxChunkSize: 600,
-  chunkOverlap: 80,
+  maxChunkSize: 300,
+  chunkOverlap: 20,
   includeGlobs: [
     '**/*.ts',
     '**/*.tsx',
@@ -28,9 +28,9 @@ const DEFAULT_CONFIG: AgentConfig = {
     '**/*.md',
     '**/*.json',
   ],
-  excludeGlobs: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.agent/**'],
-  historyDir: '.agent/sessions',
-  dbPath: '.agent/index.db',
+  excludeGlobs: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.guardian/**'],
+  historyDir: '.guardian/sessions',
+  dbPath: '.guardian/index.db',
   temperature: 0.2,
   topK: 4,
 };

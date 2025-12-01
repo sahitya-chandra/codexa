@@ -1,4 +1,4 @@
-# Agent CLI
+# Guardian CLI
 
 A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG). It is designed to run completely locally using Ollama for LLMs and local embeddings, but also supports OpenAI for embeddings if preferred.
 
@@ -18,7 +18,7 @@ A powerful, local-first CLI tool that ingests your codebase and allows you to as
 The project is organized as follows:
 
 ```
-agent-cli/
+guardian-cli/
 ├── bin/                # CLI entry point
 ├── src/
 │   ├── embeddings/     # Embedding provider implementations (Local & OpenAI)
@@ -32,19 +32,19 @@ agent-cli/
 │   ├── ingest.ts       # Repository ingestion orchestration
 │   ├── retriever.ts    # Context retrieval logic
 │   └── types.ts        # TypeScript interfaces and types
-├── .agentrc.json       # Default configuration file
+├── .guardianrc.json       # Default configuration file
 └── package.json        # Dependencies and scripts
 ```
 
 ## 🛠️ Architecture
 
-The Agent CLI operates in two main phases:
+The Guardian CLI operates in two main phases:
 
 1.  **Ingestion Phase**:
     - **Scan**: Traverses the repository based on glob patterns.
     - **Chunk**: Splits files into manageable text chunks (configurable size and overlap).
     - **Embed**: Generates vector embeddings for each chunk using the specified provider.
-    - **Store**: Saves chunks and embeddings into a local SQLite database (`.agent/index.db`).
+    - **Store**: Saves chunks and embeddings into a local SQLite database (`.guardian/index.db`).
 
 2.  **Query Phase**:
     - **Embed Query**: Converts your question into a vector.
@@ -62,11 +62,11 @@ The Agent CLI operates in two main phases:
 ### Installation
 
 ```bash
-git clone https://github.com/sahitya-chandra/agent-cli.git
-cd agent-cli
+git clone https://github.com/sahitya-chandra/guardian-cli.git
+cd guardian-cli
 npm install
 npm run build
-npm link # Optional: exposes `agent` command globally
+npm link # Optional: exposes `guardian` command globally
 ```
 
 ### Usage
@@ -74,15 +74,15 @@ npm link # Optional: exposes `agent` command globally
 1.  **Initialize**: Run this in the root of the repository you want to analyze.
 
     ```bash
-    agent init
+    guardian init
     ```
 
-    This creates an `.agentrc.json` configuration file.
+    This creates an `.guardianrc.json` configuration file.
 
 2.  **Ingest**: Index the codebase.
 
     ```bash
-    agent ingest
+    guardian ingest
     ```
 
     Use `--force` to rebuild the index from scratch.
@@ -90,7 +90,7 @@ npm link # Optional: exposes `agent` command globally
 3.  **Ask**: Start asking questions.
 
     ```bash
-    agent ask "How does the authentication flow work?"
+    guardian ask "How does the authentication flow work?"
     ```
 
     **Note**: Ensure Ollama is running and the configured model (default: `qwen2.5:3b-instruct`) is pulled:
@@ -101,7 +101,7 @@ npm link # Optional: exposes `agent` command globally
 
 ## ⚙️ Configuration
 
-The `.agentrc.json` file allows you to fine-tune the agent's behavior:
+The `.guardianrc.json` file allows you to fine-tune the agent's behavior:
 
 | Field               | Description                               | Default                       |
 | :------------------ | :---------------------------------------- | :---------------------------- |

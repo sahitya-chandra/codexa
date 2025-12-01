@@ -14,29 +14,29 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "AgentCLI - The Ultimate CLI for Modern Developers",
-    template: "%s | AgentCLI",
+    default: "GuardianCLI - The Ultimate CLI for Modern Developers",
+    template: "%s | GuardianCLI",
   },
-  description: "Build, deploy, and manage your applications with speed and precision. AgentCLI is designed for efficiency and built for scale.",
+  description: "Build, deploy, and manage your applications with speed and precision. GuardianCLI is designed for efficiency and built for scale.",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://agent-cli.app",
-    title: "AgentCLI - The Ultimate CLI for Modern Developers",
+    url: "https://guardian-cli.app",
+    title: "GuardianCLI - The Ultimate CLI for Modern Developers",
     description: "Build, deploy, and manage your applications with speed and precision.",
-    siteName: "AgentCLI",
+    siteName: "GuardianCLI",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "AgentCLI",
+        alt: "GuardianCLI",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AgentCLI - The Ultimate CLI for Modern Developers",
+    title: "GuardianCLI - The Ultimate CLI for Modern Developers",
     description: "Build, deploy, and manage your applications with speed and precision.",
     images: ["/api/og"],
     creator: "@sahitya_chandra",

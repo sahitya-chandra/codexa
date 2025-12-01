@@ -40,18 +40,18 @@ export default function Home() {
               </div>
               <div className="mx-auto w-full max-w-[500px] lg:max-w-none">
                 <Terminal>
-                  <TerminalLine delay={0.5}>agent init my-project</TerminalLine>
+                  <TerminalLine delay={0.5}>guardian init my-project</TerminalLine>
                   <TerminalOutput delay={1.5}>
                     Initializing project structure...<br />
                     Installing dependencies...<br />
                     <span className="text-green-400">✔ Project created successfully!</span>
                   </TerminalOutput>
-                  <TerminalLine delay={3}>agent deploy</TerminalLine>
+                  <TerminalLine delay={3}>guardian deploy</TerminalLine>
                   <TerminalOutput delay={4}>
                     Building application...<br />
                     Optimizing assets...<br />
                     Deploying to edge...<br />
-                    <span className="text-green-400">✔ Deployed to https://agent-cli.app</span>
+                    <span className="text-green-400">✔ Deployed to https://guardian-cli.app</span>
                   </TerminalOutput>
                 </Terminal>
               </div>
@@ -125,11 +125,11 @@ export default function Home() {
                 <div className="flex flex-col gap-4">
                   <div className="space-y-2">
                     <h3 className="font-semibold">NPM</h3>
-                    <CodeBlock code="npm install -g agent-cli" language="bash" />
+                    <CodeBlock code="npm install -g guardian-cli" language="bash" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="font-semibold">Yarn</h3>
-                    <CodeBlock code="yarn global add agent-cli" language="bash" />
+                    <CodeBlock code="yarn global add guardian-cli" language="bash" />
                   </div>
                 </div>
               </div>
@@ -142,13 +142,13 @@ export default function Home() {
                       <span className="text-foreground font-medium">Install the CLI</span> using your preferred package manager.
                     </li>
                     <li>
-                      <span className="text-foreground font-medium">Initialize a project</span> by running <code className="bg-muted px-1 py-0.5 rounded text-sm">agent init</code>.
+                      <span className="text-foreground font-medium">Initialize a project</span> by running <code className="bg-muted px-1 py-0.5 rounded text-sm">guardian init</code>.
                     </li>
                     <li>
                       <span className="text-foreground font-medium">Configure your settings</span> in the generated config file.
                     </li>
                     <li>
-                      <span className="text-foreground font-medium">Deploy your app</span> with a single command: <code className="bg-muted px-1 py-0.5 rounded text-sm">agent deploy</code>.
+                      <span className="text-foreground font-medium">Deploy your app</span> with a single command: <code className="bg-muted px-1 py-0.5 rounded text-sm">guardian deploy</code>.
                     </li>
                   </ol>
                 </div>
@@ -164,7 +164,7 @@ export default function Home() {
               Ready to supercharge your workflow?
             </h2>
             <p className="mx-auto max-w-[600px] text-primary-foreground/80 md:text-xl mb-8">
-              Join thousands of developers who are building the future with AgentCLI.
+              Join thousands of developers who are building the future with GuardianCLI.
             </p>
             <Button size="lg" variant="secondary" className="gap-2">
               Get Started Now <ArrowRight className="h-4 w-4" />

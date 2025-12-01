@@ -9,17 +9,17 @@ import { log } from './utils/logger';
 const program = new Command();
 
 program
-  .name('agent')
+  .name('guardian')
   .description('Ask questions about any local repository from the command line.')
   .version('0.1.0');
 
 program
   .command('init')
-  .description('Create a local .agentrc.json with sensible defaults.')
+  .description('Create a local .guardianrc.json with sensible defaults.')
   .action(async () => {
     const cwd = process.cwd();
     await ensureConfig(cwd);
-    log.success('Created .agentrc.json. Update it with your provider keys if needed.');
+    log.success('Created .guardianrc.json. Update it with your provider keys if needed.');
   });
 
 program

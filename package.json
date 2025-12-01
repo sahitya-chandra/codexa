@@ -1,9 +1,9 @@
 {
-  "name": "agent-cli",
+  "name": "guardian-cli",
   "version": "0.1.0",
   "description": "CLI agent that indexes local repos and answers questions with hosted or local LLMs.",
   "bin": {
-    "agent": "bin/agent.js"
+    "guardian": "bin/guardian.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
