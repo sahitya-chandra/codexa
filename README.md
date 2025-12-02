@@ -1,132 +1,916 @@
-# Guardian CLI
+<div align="center">
+  <img width="2816" height="1536" alt="Guardian" src="https://raw.githubusercontent.com/sahitya-chandra/guardian/main/.github/assets/logo.png" />
+  
+  <h1>Guardian</h1>
+  
+  <p>
+    <strong>A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
+  </p>
+  
+  <p>
+    <a href="https://www.npmjs.com/package/guardian"><img src="https://img.shields.io/npm/v/guardian?style=flat-square" alt="npm version"></a>
+    <a href="https://github.com/sahitya-chandra/guardian/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License"></a>
+    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/language-TypeScript-blue.svg?style=flat-square" alt="TypeScript"></a>
+    <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg?style=flat-square" alt="Node.js version">
+  </p>
+  
+  <p>
+    <a href="#installation">Installation</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#commands">Commands</a> •
+    <a href="#configuration">Configuration</a> •
+    <a href="#examples">Examples</a>
+  </p>
+</div>
 
-A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG). It is designed to run completely locally using Ollama for LLMs and local embeddings, but also supports OpenAI for embeddings if preferred.
+---
 
-## 🚀 Features
+## Table of Contents
 
-- **Local-First Ingestion**: Indexes your repository locally using SQLite and vector embeddings.
-- **Local LLM Support**: Uses [Ollama](https://ollama.com/) to answer questions about your code, ensuring your data stays private.
-- **Flexible Embeddings**:
-  - **Local**: Built-in support for local embeddings using `@xenova/transformers` (no API key needed).
-  - **OpenAI**: Option to use OpenAI's embedding models for higher accuracy.
-- **Smart Context Retrieval**: Uses vector similarity search to find relevant code chunks for your questions.
-- **Configurable**: Customize file inclusion/exclusion, chunking strategies, and model parameters via `.agentrc.json`.
-- **Conversation History**: Maintains session history for context-aware follow-up questions.
+- [Features](#features)
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Installation Methods](#installation-methods)
+  - [Updating Guardian](#updating-guardian)
+  - [LLM Setup](#llm-setup)
+- [Quick Start](#quick-start)
+- [Commands](#commands)
+- [Configuration](#configuration)
+- [Examples](#examples)
+- [How It Works](#how-it-works)
+- [Architecture](#architecture)
+- [Troubleshooting](#troubleshooting)
+- [FAQ](#faq)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 📂 Project Structure
+## Features
 
-The project is organized as follows:
+- 🔒 **Privacy-First**: All data processing happens locally by default
+- ⚡ **Fast & Efficient**: Local embeddings and optimized vector search
+- 🤖 **Multiple LLM Support**: Works with Ollama (local) and Groq (cloud)
+- 💾 **Local Storage**: SQLite database for embeddings and context
+- 🎯 **Smart Chunking**: Intelligent code splitting with configurable overlap
+- 🔄 **Session Management**: Maintain conversation context across queries
+- 📊 **Streaming Output**: Real-time response streaming for better UX
+- 🎨 **Multiple File Types**: Supports TypeScript, JavaScript, Python, Go, Rust, Java, and more
+- ⚙️ **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters
+- 🚀 **Zero Setup**: Works out of the box with sensible defaults
 
-```
-guardian-cli/
-├── bin/                # CLI entry point
-├── src/
-│   ├── embeddings/     # Embedding provider implementations (Local & OpenAI)
-│   ├── models/         # LLM provider implementations (Local/Ollama)
-│   ├── utils/          # Utility functions
-│   ├── agent.ts        # Core agent logic (RAG pipeline)
-│   ├── chunker.ts      # File chunking logic
-│   ├── cli.ts          # CLI command definitions (init, ingest, ask)
-│   ├── config.ts       # Configuration loading and validation
-│   ├── db.ts           # Vector store implementation (SQLite)
-│   ├── ingest.ts       # Repository ingestion orchestration
-│   ├── retriever.ts    # Context retrieval logic
-│   └── types.ts        # TypeScript interfaces and types
-├── .guardianrc.json       # Default configuration file
-└── package.json        # Dependencies and scripts
-```
-
-## 🛠️ Architecture
-
-The Guardian CLI operates in two main phases:
-
-1.  **Ingestion Phase**:
-    - **Scan**: Traverses the repository based on glob patterns.
-    - **Chunk**: Splits files into manageable text chunks (configurable size and overlap).
-    - **Embed**: Generates vector embeddings for each chunk using the specified provider.
-    - **Store**: Saves chunks and embeddings into a local SQLite database (`.guardian/index.db`).
-
-2.  **Query Phase**:
-    - **Embed Query**: Converts your question into a vector.
-    - **Retrieve**: Finds the most similar code chunks from the database.
-    - **Generate**: Constructs a prompt with the retrieved context and conversation history, then queries the local LLM (Ollama) for an answer.
-
-## 🏁 Getting Started
+## Installation
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm
-- [Ollama](https://ollama.com/) (Required for running the LLM)
+Before installing Guardian, ensure you have the following:
 
-### Installation
+- **Node.js**: v18.0.0 or higher
+  ```bash
+  node --version  # Should be v18.0.0 or higher
+  ```
+
+- **For Local LLM (Ollama)**: [Ollama](https://ollama.com/) must be installed
+- **For Cloud LLM (Groq)**: A Groq API key from [console.groq.com](https://console.groq.com/)
+
+### Installation Methods
+
+Choose the installation method that works best for your system:
+
+#### Method 1: npm (Recommended)
+
+Install Guardian globally using npm:
 
 ```bash
-git clone https://github.com/sahitya-chandra/guardian-cli.git
-cd guardian-cli
-npm install
-npm run build
-npm link # Optional: exposes `guardian` command globally
+npm install -g guardian
 ```
 
-### Usage
+Verify installation:
 
-1.  **Initialize**: Run this in the root of the repository you want to analyze.
+```bash
+guardian --version
+```
 
-    ```bash
-    guardian init
-    ```
+#### Method 2: Homebrew (macOS)
 
-    This creates an `.guardianrc.json` configuration file.
+Install Guardian using Homebrew on macOS:
 
-2.  **Ingest**: Index the codebase.
+First, add the tap:
+```bash
+brew tap sahitya-chandra/guardian
+```
 
-    ```bash
-    guardian ingest
-    ```
+Then install:
+```bash
+brew install guardian
+```
 
-    Use `--force` to rebuild the index from scratch.
+### Updating Guardian
 
-3.  **Ask**: Start asking questions.
+To update Guardian to the latest version:
 
-    ```bash
-    guardian ask "How does the authentication flow work?"
-    ```
+**If installed via npm:**
+```bash
+npm install -g guardian@latest
+```
 
-    **Note**: Ensure Ollama is running and the configured model (default: `qwen2.5:3b-instruct`) is pulled:
+**If installed via Homebrew:**
+```bash
+brew upgrade guardian
+```
 
-    ```bash
-    ollama pull qwen2.5:3b-instruct
-    ```
+**Check your current version:**
+```bash
+guardian --version
+```
 
-## ⚙️ Configuration
+**Check for updates:**
+- Visit the [npm package page](https://www.npmjs.com/package/guardian) to see the latest version
+- Or check the [GitHub releases](https://github.com/sahitya-chandra/guardian/releases)
 
-The `.guardianrc.json` file allows you to fine-tune the agent's behavior:
+> 💡 **Tip:** It's recommended to keep Guardian updated to get the latest features, bug fixes, and security updates.
 
-| Field               | Description                               | Default                       |
-| :------------------ | :---------------------------------------- | :---------------------------- |
-| `modelProvider`     | `local` (Only local supported currently). | `local`                       |
-| `model`             | Model ID (e.g., `qwen2.5:3b-instruct`).   | `qwen2.5:3b-instruct`         |
-| `localModelUrl`     | Base URL for local model server.          | `http://localhost:11434`      |
-| `embeddingProvider` | `openai` or `local`.                      | `local`                       |
-| `embeddingModel`    | Embedding model ID.                       | `Xenova/all-MiniLM-L6-v2`     |
-| `includeGlobs`      | Patterns for files to include.            | `["**/*.ts", "**/*.js", ...]` |
-| `excludeGlobs`      | Patterns for files to exclude.            | `["**/node_modules/**", ...]` |
-| `maxChunkSize`      | Maximum characters per chunk.             | `600`                         |
-| `chunkOverlap`      | Overlap between chunks.                   | `80`                          |
-| `topK`              | Number of chunks to retrieve.             | `8`                           |
+### LLM Setup
 
-## 🧪 Development
+Guardian requires an LLM to generate answers. You can use either Groq (cloud - recommended) or Ollama (local). Groq is recommended for its speed and reliability.
 
-- `npm run dev`: Run the CLI using `tsx` (no build required).
-- `npm run build`: Compile TypeScript to `dist/`.
-- `npm run lint`: Run ESLint.
-- `npm run format`: Format code with Prettier.
-- `npm run smoke`: Run a smoke test on the `examples/sample` repo.
+#### Option 1: Using Groq (Cloud - Recommended)
 
-## 🗺️ Roadmap
+Groq provides fast cloud-based LLMs with a generous free tier and is the recommended option for most users.
 
-- [ ] Hybrid Search (BM25 + Vector).
-- [ ] Support for additional vector databases (Pinecone, pgvector).
-- [ ] Git history context integration.
-- [ ] Advanced tool use (dependency graphs, summarization).
+**Step 1: Get a Groq API Key**
+
+1. Visit [console.groq.com](https://console.groq.com/)
+2. Sign up or log in
+3. Navigate to API Keys section
+4. Create a new API key
+5. Copy your API key (starts with `gsk_`)
+
+**Step 2: Set Environment Variable**
+
+**macOS/Linux:**
+```bash
+# Add to your shell profile (~/.zshrc, ~/.bashrc, etc.)
+export GROQ_API_KEY="gsk_your_api_key_here"
+
+# Reload your shell or run:
+source ~/.zshrc  # or ~/.bashrc
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:GROQ_API_KEY="gsk_your_api_key_here"
+
+# Or add permanently:
+[System.Environment]::SetEnvironmentVariable('GROQ_API_KEY', 'gsk_your_api_key_here', 'User')
+```
+
+**Windows (Command Prompt):**
+```cmd
+setx GROQ_API_KEY "gsk_your_api_key_here"
+```
+
+**Step 3: Verify API Key is Set**
+
+```bash
+echo $GROQ_API_KEY  # macOS/Linux
+echo %GROQ_API_KEY% # Windows CMD
+```
+
+**Step 4: Configure Guardian**
+
+Guardian defaults to using Groq when you run `guardian init`. If you need to manually configure, edit `.guardianrc.json`:
+
+```json
+{
+  "modelProvider": "groq",
+  "model": "llama-3.1-8b-instant",
+  "embeddingProvider": "local",
+  "embeddingModel": "Xenova/all-MiniLM-L6-v2"
+}
+```
+
+**Available Groq Models:**
+- `llama-3.1-8b-instant` - Fast responses (recommended, default)
+- `llama-3.1-70b-versatile` - Higher quality, slower
+
+#### Option 2: Using Ollama (Local - Alternative)
+
+Ollama runs LLMs locally on your machine, keeping your code completely private. This is an alternative option if you prefer local processing.
+
+> ⚠️ **Note:** Models with more than 3 billion parameters may not work reliably with local Ollama setup. We recommend using 3B parameter models for best compatibility, or use Groq (Option 1) for better reliability.
+
+**Step 1: Install Ollama**
+
+- **macOS/Linux**: Visit [ollama.com](https://ollama.com/) and follow the installation instructions
+- **Or use Homebrew on macOS**:
+  ```bash
+  brew install ollama
+  ```
+
+**Step 2: Start Ollama Service**
+
+```bash
+# Start Ollama (usually starts automatically after installation)
+ollama serve
+
+# Verify Ollama is running
+curl http://localhost:11434/api/tags
+```
+
+**Step 3: Download a Model**
+
+Pull a model that Guardian can use:
+
+```bash
+# Recommended: Fast and lightweight - 3B parameters
+ollama pull qwen2.5:3b-instruct
+
+# Alternative 3B options:
+ollama pull qwen2.5:1.5b-instruct    # Even faster, smaller
+ollama pull phi3:mini                # Microsoft Phi-3 Mini
+
+# ⚠️ Note: Larger models (8B+ like llama3:8b, mistral:7b) may not work locally
+# If you encounter issues, try using a 3B model instead, or switch to Groq
+```
+
+**Step 4: Verify Model is Available**
+
+```bash
+ollama list
+```
+
+You should see your downloaded model in the list.
+
+**Step 5: Configure Guardian**
+
+Edit `.guardianrc.json` after running `guardian init`:
+
+```json
+{
+  "modelProvider": "local",
+  "model": "qwen2.5:3b-instruct",
+  "localModelUrl": "http://localhost:11434"
+}
+```
+
+#### Quick Setup Summary
+
+**For Groq (Recommended):**
+```bash
+# 1. Get API key from console.groq.com
+# 2. Set environment variable
+export GROQ_API_KEY="gsk_your_key"
+
+# 3. Run guardian init (defaults to Groq)
+guardian init
+
+# 4. Ready to use!
+```
+
+**For Ollama (Alternative):**
+```bash
+# 1. Install Ollama
+brew install ollama  # macOS
+# or visit ollama.com for other platforms
+
+# 2. Start Ollama
+ollama serve
+
+# 3. Pull model (use 3B models only)
+ollama pull qwen2.5:3b-instruct
+
+# 4. Update .guardianrc.json to set "modelProvider": "local"
+guardian init
+# Then edit .guardianrc.json to set modelProvider to "local"
+```
+
+## Quick Start
+
+Once Guardian is installed and your LLM is configured, you're ready to use it:
+
+1. **Navigate to your project directory:**
+   ```bash
+   cd /path/to/your/project
+   ```
+
+2. **Initialize Guardian:**
+   ```bash
+   guardian init
+   ```
+   This creates a `.guardianrc.json` configuration file with sensible defaults.
+
+3. **Ingest your codebase:**
+   ```bash
+   guardian ingest
+   ```
+   This indexes your codebase and creates embeddings. First run may take a few minutes.
+
+4. **Ask questions:**
+   ```bash
+   guardian ask "How does the authentication flow work?"
+   guardian ask "What is the main entry point of this application?"
+   guardian ask "Show me how error handling is implemented"
+   ```
+
+## Commands
+
+### `init`
+
+Creates a `.guardianrc.json` configuration file in the current directory with default settings.
+
+```bash
+guardian init
+```
+
+**What it does:**
+- Creates `.guardianrc.json` in the project root
+- Uses sensible defaults for all configuration options
+- Can be safely run multiple times (won't overwrite existing config)
+
+---
+
+### `ingest`
+
+Indexes the codebase and generates embeddings for semantic search.
+
+```bash
+guardian ingest [options]
+```
+
+**Options:**
+- `-f, --force` - Clear existing index and rebuild from scratch
+
+**Examples:**
+```bash
+# Standard ingestion
+guardian ingest
+
+# Force rebuild (useful if you've updated code significantly)
+guardian ingest --force
+```
+
+**What it does:**
+1. Scans your repository based on `includeGlobs` and `excludeGlobs` patterns
+2. Chunks files into manageable segments
+3. Generates vector embeddings for each chunk
+4. Stores everything in `.guardian/index.db` (SQLite database)
+
+**Note:** First ingestion may take a few minutes depending on your codebase size. Subsequent ingestions are faster as they only process changed files.
+
+---
+
+### `ask`
+
+Ask natural language questions about your codebase.
+
+```bash
+guardian ask <question...> [options]
+```
+
+**Arguments:**
+- `<question...>` - Your question (can be multiple words)
+
+**Options:**
+- `-s, --session <name>` - Session identifier to maintain conversation context (default: `"default"`)
+- `--no-stream` - Disable streaming output (show full response at once)
+
+**Examples:**
+```bash
+# Basic question
+guardian ask "How does user authentication work?"
+
+# Question with multiple words
+guardian ask "What is the main entry point of this application?"
+
+# Use a specific session for context
+guardian ask "How does the login function work?" --session my-analysis
+
+# Disable streaming
+guardian ask "Summarize the codebase structure" --no-stream
+
+# Follow-up question in the same session
+guardian ask "Can you explain that in more detail?" --session my-analysis
+```
+
+**How it works:**
+1. Converts your question to a vector embedding
+2. Searches the codebase for relevant chunks using vector similarity
+3. Retrieves the top-K most relevant code sections
+4. Sends question + context to the LLM
+5. Returns a contextual answer about your codebase
+
+## Configuration
+
+### Configuration File
+
+Guardian uses a `.guardianrc.json` file in your project root for configuration. This file is automatically created when you run `guardian init`.
+
+**Location:** `.guardianrc.json` (project root)
+
+**Format:** JSON
+
+### Environment Variables
+
+Some settings can be configured via environment variables:
+
+| Variable | Description | Required For |
+|----------|-------------|--------------|
+| `GROQ_API_KEY` | Groq API key for cloud LLM | Groq provider |
+| `OPENAI_API_KEY` | OpenAI API key (for embeddings) | OpenAI embeddings |
+
+**Example:**
+```bash
+export GROQ_API_KEY="gsk_your_key_here"
+export OPENAI_API_KEY="sk-your_key_here"  # If using OpenAI embeddings
+```
+
+### Configuration Options
+
+#### `modelProvider`
+
+**Type:** `"local" | "groq"`  
+**Default:** `"groq"` (recommended)
+
+The LLM provider to use for generating answers.
+
+- `"groq"` - Uses Groq's cloud API (recommended, requires `GROQ_API_KEY`)
+- `"local"` - Uses Ollama running on your machine (alternative option)
+
+#### `model`
+
+**Type:** `string`  
+**Default:** `"llama-3.1-8b-instant"` (groq, recommended) or `"qwen2.5:3b-instruct"` (local)
+
+The model identifier to use.
+
+**Common Groq Models (Recommended):**
+- `llama-3.1-8b-instant` - Fast responses (default, recommended)
+- `llama-3.1-70b-versatile` - Higher quality, slower
+
+**Common Local Models (Alternative):**
+- `qwen2.5:3b-instruct` - Fast, lightweight - **3B parameters**
+- `qwen2.5:1.5b-instruct` - Even faster, smaller - **1.5B parameters**
+- `phi3:mini` - Microsoft Phi-3 Mini - **3.8B parameters**
+
+> ⚠️ **Warning:** Models with more than 3 billion parameters (like `llama3:8b`, `mistral:7b`) may not work reliably with local Ollama setup. If you encounter issues, please try using a 3B parameter model instead, or switch to Groq.
+
+#### `localModelUrl`
+
+**Type:** `string`  
+**Default:** `"http://localhost:11434"`
+
+Base URL for your local Ollama instance. Change this if Ollama runs on a different host or port.
+
+#### `embeddingProvider`
+
+**Type:** `"local"`  
+**Default:** `"local"`
+
+The embedding provider for vector search.
+
+- `"local"` - Uses `@xenova/transformers` (runs entirely locally)
+
+#### `embeddingModel`
+
+**Type:** `string`  
+**Default:** `"Xenova/all-MiniLM-L6-v2"`
+
+The embedding model for generating vector representations. This model is downloaded automatically on first use.
+
+#### `maxChunkSize`
+
+**Type:** `number`  
+**Default:** `200`
+
+Maximum number of lines per code chunk. Larger values = more context per chunk but fewer chunks.
+
+#### `chunkOverlap`
+
+**Type:** `number`  
+**Default:** `20`
+
+Number of lines to overlap between consecutive chunks. Helps maintain context at chunk boundaries.
+
+#### `includeGlobs`
+
+**Type:** `string[]`  
+**Default:** `["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.py", "**/*.go", "**/*.rs", "**/*.java", "**/*.md", "**/*.json"]`
+
+File patterns to include in indexing. Supports glob patterns.
+
+**Examples:**
+```json
+{
+  "includeGlobs": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/**/*.js",
+    "lib/**/*.py"
+  ]
+}
+```
+
+#### `excludeGlobs`
+
+**Type:** `string[]`  
+**Default:** `["node_modules/**", ".git/**", "dist/**", "build/**", ".guardian/**", "package-lock.json"]`
+
+File patterns to exclude from indexing.
+
+**Examples:**
+```json
+{
+  "excludeGlobs": [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "**/*.test.ts",
+    "coverage/**"
+  ]
+}
+```
+
+#### `historyDir`
+
+**Type:** `string`  
+**Default:** `".guardian/sessions"`
+
+Directory to store conversation history for session management.
+
+#### `dbPath`
+
+**Type:** `string`  
+**Default:** `".guardian/index.db"`
+
+Path to the SQLite database storing code chunks and embeddings.
+
+#### `temperature`
+
+**Type:** `number`  
+**Default:** `0.2`
+
+Controls randomness in LLM responses (0.0 = deterministic, 1.0 = creative).
+
+- Lower values (0.0-0.3): More focused, deterministic answers
+- Higher values (0.7-1.0): More creative, varied responses
+
+#### `topK`
+
+**Type:** `number`  
+**Default:** `4`
+
+Number of code chunks to retrieve and use as context for each question. Higher values provide more context but may include less relevant information.
+
+### Example Configurations
+
+#### Groq Cloud Provider (Recommended - Default)
+
+```json
+{
+  "modelProvider": "groq",
+  "model": "llama-3.1-8b-instant",
+  "embeddingProvider": "local",
+  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
+  "maxChunkSize": 300,
+  "chunkOverlap": 20,
+  "temperature": 0.2,
+  "topK": 4
+}
+```
+
+**Remember:** Set `GROQ_API_KEY` environment variable:
+```bash
+export GROQ_API_KEY="your-api-key"
+```
+
+#### Local Development (Alternative)
+
+```json
+{
+  "modelProvider": "local",
+  "model": "qwen2.5:3b-instruct",
+  "localModelUrl": "http://localhost:11434",
+  "embeddingProvider": "local",
+  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
+  "maxChunkSize": 200,
+  "chunkOverlap": 20,
+  "temperature": 0.2,
+  "topK": 4
+}
+```
+
+#### Optimized for Large Codebases
+
+```json
+{
+  "modelProvider": "local",
+  "model": "qwen2.5:3b-instruct",
+  "maxChunkSize": 150,
+  "chunkOverlap": 15,
+  "topK": 6,
+  "temperature": 0.1,
+  "includeGlobs": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "lib/**/*.ts"
+  ],
+  "excludeGlobs": [
+    "node_modules/**",
+    "dist/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "coverage/**"
+  ]
+}
+```
+
+## Examples
+
+### Basic Workflow
+
+```bash
+# 1. Initialize in your project
+cd my-project
+guardian init
+
+# 2. Index your codebase
+guardian ingest
+
+# 3. Ask questions
+guardian ask "What is the main purpose of this codebase?"
+guardian ask "How does the user authentication work?"
+guardian ask "Where is the API routing configured?"
+```
+
+### Using Sessions for Context
+
+```bash
+# Start a new analysis session
+guardian ask "What does the UserService class do?" --session user-analysis
+
+# Follow up with context from previous question
+guardian ask "How does it handle errors?" --session user-analysis
+
+# Ask about related functionality
+guardian ask "Show me where it's used in the codebase" --session user-analysis
+```
+
+### Force Re-indexing
+
+```bash
+# After significant code changes
+guardian ingest --force
+```
+
+### Working with Specific File Types
+
+Update `.guardianrc.json` to focus on specific languages:
+
+```json
+{
+  "includeGlobs": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "excludeGlobs": [
+    "node_modules/**",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}
+```
+
+## How It Works
+
+Guardian uses Retrieval-Augmented Generation (RAG) to answer questions about your codebase:
+
+### 1. Ingestion Phase
+
+When you run `guardian ingest`:
+
+1. **File Discovery**: Scans your repository using glob patterns (`includeGlobs`/`excludeGlobs`)
+2. **Code Chunking**: Splits files into manageable chunks with configurable overlap
+3. **Embedding Generation**: Creates vector embeddings for each chunk using local transformers
+4. **Storage**: Stores chunks and embeddings in a SQLite database (`.guardian/index.db`)
+
+### 2. Query Phase
+
+When you run `guardian ask`:
+
+1. **Question Embedding**: Converts your question into a vector embedding
+2. **Vector Search**: Finds the most similar code chunks using cosine similarity
+3. **Context Retrieval**: Selects top-K most relevant chunks as context
+4. **LLM Generation**: Sends question + context to your configured LLM
+5. **Response**: Returns an answer grounded in your actual codebase
+
+### Benefits
+
+- **Privacy**: All processing happens locally by default
+- **Speed**: Local embeddings and vector search are very fast
+- **Accuracy**: Answers are based on your actual code, not generic responses
+- **Context-Aware**: Understands relationships across your codebase
+
+## Architecture
+
+```
+┌─────────────────┐
+│   User Query    │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐     ┌──────────────┐
+│  Embedding      │────▶│   Vector     │
+│  Generation     │     │   Search     │
+└─────────────────┘     └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │   Context    │
+                        │   Retrieval  │
+                        └──────┬───────┘
+                               │
+                               ▼
+┌─────────────────┐     ┌──────────────┐
+│   SQLite DB     │◀────│   LLM        │
+│   (Chunks +     │     │   (Ollama/   │
+│   Embeddings)   │     │    Groq)     │
+└─────────────────┘     └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │   Answer     │
+                        └──────────────┘
+```
+
+**Key Components:**
+- **Chunker**: Splits code files into semantic chunks
+- **Embedder**: Generates vector embeddings (local transformers)
+- **Retriever**: Finds relevant chunks using vector similarity
+- **LLM Client**: Generates answers (Ollama local or Groq cloud)
+- **Database**: SQLite for storing chunks and embeddings
+
+## Troubleshooting
+
+### "Ollama not reachable" Error
+
+**Problem:** Guardian can't connect to your local Ollama instance.
+
+**Solutions:**
+1. Ensure Ollama is running:
+   ```bash
+   ollama serve
+   ```
+2. Check if Ollama is running on the default port:
+   ```bash
+   curl http://localhost:11434/api/tags
+   ```
+3. If Ollama runs on a different host/port, update `.guardianrc.json`:
+   ```json
+   {
+     "localModelUrl": "http://your-host:port"
+   }
+   ```
+
+### "Model not found" Error
+
+**Problem:** The specified Ollama model isn't available.
+
+**Solutions:**
+1. List available models:
+   ```bash
+   ollama list
+   ```
+2. Pull the required model:
+   ```bash
+   ollama pull qwen2.5:3b-instruct
+   ```
+3. Or update `.guardianrc.json` to use an available model:
+   ```json
+   {
+     "model": "your-available-model"
+   }
+   ```
+
+### "GROQ_API_KEY not set" Error
+
+**Problem:** Using Groq provider but API key is missing.
+
+**Solutions:**
+1. Set the environment variable:
+   ```bash
+   export GROQ_API_KEY="your-api-key"
+   ```
+2. Or add it to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.)
+3. Verify it's set:
+   ```bash
+   echo $GROQ_API_KEY
+   ```
+
+### Ingestion is Very Slow
+
+**Problem:** First ingestion takes too long.
+
+**Solutions:**
+1. Reduce `maxChunkSize` to create more, smaller chunks
+2. Add more patterns to `excludeGlobs` to skip unnecessary files
+3. Be more specific with `includeGlobs` to focus on important files
+4. Use `--force` only when necessary (incremental updates are faster)
+
+### Poor Quality Answers
+
+**Problem:** Answers are not relevant or accurate.
+
+**Solutions:**
+1. Increase `topK` to retrieve more context:
+   ```json
+   {
+     "topK": 6
+   }
+   ```
+2. Adjust `temperature` for more focused answers:
+   ```json
+   {
+     "temperature": 0.1
+   }
+   ```
+3. Re-index after significant code changes:
+   ```bash
+   guardian ingest --force
+   ```
+4. If using local Ollama, try a 3B parameter model (models larger than 3B may not work reliably locally)
+5. Ask more specific questions
+
+### Database Locked Error
+
+**Problem:** SQLite database is locked (multiple processes accessing it).
+
+**Solutions:**
+1. Ensure only one `guardian` process runs at a time
+2. If using concurrent processes, each should use a different `dbPath`
+
+### Missing Files in Index
+
+**Problem:** Some files aren't being indexed.
+
+**Solutions:**
+1. Check `includeGlobs` patterns in `.guardianrc.json`
+2. Verify files aren't excluded by `excludeGlobs`
+3. Run with `--force` to rebuild:
+   ```bash
+   guardian ingest --force
+   ```
+4. Check file permissions (ensure Guardian can read the files)
+
+## FAQ
+
+**Q: Can I use Guardian with private/confidential code?**  
+A: Yes! Guardian processes everything locally by default. Your code never leaves your machine unless you explicitly use cloud providers like Groq.
+
+**Q: How much disk space does Guardian use?**  
+A: Typically 10-50MB per 1000 files, depending on file sizes. The SQLite database stores chunks and embeddings.
+
+**Q: Can I use Guardian in CI/CD?**  
+A: Yes, but you'll need to ensure Ollama or your LLM provider is accessible. For CI/CD, consider using Groq (cloud) instead of local Ollama.
+
+**Q: Does Guardian work with monorepos?**  
+A: Yes! Adjust `includeGlobs` and `excludeGlobs` to target specific packages or workspaces.
+
+**Q: Can I use multiple LLM providers?**  
+A: You can switch providers by updating `modelProvider` in `.guardianrc.json`. Each repository can have its own configuration.
+
+**Q: How often should I re-index?**  
+A: Guardian only processes changed files on subsequent runs, so you can run `ingest` frequently. Use `--force` only when you need a complete rebuild.
+
+**Q: Is there a way to query the database directly?**  
+A: The SQLite database (`.guardian/index.db`) can be queried directly, but the schema is internal. Use Guardian's commands for all operations.
+
+**Q: Can I customize the prompt sent to the LLM?**  
+A: Currently, the prompt is fixed, but this may be configurable in future versions.
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+Quick start:
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+For major changes, please open an issue first to discuss what you would like to change.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+  <p>Made with ❤️ by the Guardian team</p>
+  <p>
+    <a href="https://github.com/sahitya-chandra/guardian/issues">Report Bug</a> •
+    <a href="https://github.com/sahitya-chandra/guardian/issues">Request Feature</a>
+  </p>
+</div>

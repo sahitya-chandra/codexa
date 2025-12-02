@@ -1,0 +1,53 @@
+# Source files (we only ship compiled dist/)
+src/
+tests/
+scripts/
+examples/
+
+# Development files
+*.test.ts
+*.test.js
+tsconfig.json
+vitest.config.ts
+eslint.config.mjs
+
+# Web frontend (separate package)
+web/
+
+# Build artifacts (will be regenerated)
+dist/
+
+# Development configs
+.prettierrc
+.prettierignore
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation (optional - you might want to include README.md)
+# README.md
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Dependencies (npm will install these)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
