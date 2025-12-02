@@ -6,7 +6,7 @@
   "localModelUrl": "http://localhost:11434",
   "localModelApiKey": "",
   "maxChunkSize": 300,
-  "chunkOverlap": 20,
+  "chunkOverlap": 30,
   "includeGlobs": [
     "**/*.ts",
     "**/*.tsx",
@@ -30,5 +30,5 @@
   "historyDir": ".codexa/sessions",
   "dbPath": ".codexa/index.db",
   "temperature": 0.2,
-  "topK": 4
+  "topK": 5
 }

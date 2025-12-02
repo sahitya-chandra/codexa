@@ -21,8 +21,8 @@ describe('config', () => {
     await ensureConfig(mockCwd);
 
     expect(fs.writeJson).toHaveBeenCalledWith(
-      path.join(mockCwd, '.guardianrc.json'),
-      expect.objectContaining({ modelProvider: 'local' }),
+      path.join(mockCwd, '.codexarc.json'),
+      expect.objectContaining({ modelProvider: 'groq' }),
       expect.anything(),
     );
   });

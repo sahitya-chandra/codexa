@@ -38,7 +38,7 @@ jobs:
       - name: Verify build
         run: |
           test -f dist/cli.js || exit 1
-          test -f bin/guardian.js || exit 1
+          test -f bin/codexa.js || exit 1
 
       - name: Publish to npm
         if: github.event_name == 'release'

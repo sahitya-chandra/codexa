@@ -1,15 +1,15 @@
 <div align="center">
-  <img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/af27a02e-d796-4f03-95f6-3f03e3f2d03c" />
+  <img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/9d347801-9e39-494b-8645-17c0804223e3" />
   
-  <h1>Guardian</h1>
+  <h1>Codexa</h1>
   
   <p>
     <strong>A powerful CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
   </p>
   
   <p>
-    <a href="https://www.npmjs.com/package/guardian"><img src="https://img.shields.io/npm/v/guardian?style=flat-square" alt="npm version"></a>
-    <a href="https://github.com/sahitya-chandra/guardian/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License"></a>
+    <a href="https://www.npmjs.com/package/codexa"><img src="https://img.shields.io/npm/v/codexa?style=flat-square" alt="npm version"></a>
+    <a href="https://github.com/sahitya-chandra/codexa/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License"></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/language-TypeScript-blue.svg?style=flat-square" alt="TypeScript"></a>
     <img src="https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg?style=flat-square" alt="Node.js version">
   </p>
@@ -31,7 +31,7 @@
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Installation Methods](#installation-methods)
-  - [Updating Guardian](#updating-guardian)
+  - [Updating Codexa](#updating-codexa)
   - [LLM Setup](#llm-setup)
 - [Quick Start](#quick-start)
 - [Commands](#commands)
@@ -61,7 +61,7 @@
 
 ### Prerequisites
 
-Before installing Guardian, ensure you have the following:
+Before installing Codexa, ensure you have the following:
 
 - **Node.js**: v20.0.0 or higher
   ```bash
@@ -77,60 +77,60 @@ Choose the installation method that works best for your system:
 
 #### Method 1: npm (Recommended)
 
-Install Guardian globally using npm:
+Install Codexa globally using npm:
 
 ```bash
-npm install -g guardian
+npm install -g codexa
 ```
 
 Verify installation:
 
 ```bash
-guardian --version
+codexa --version
 ```
 
 #### Method 2: Homebrew (macOS)
 
-Install Guardian using Homebrew on macOS:
+Install codexa using Homebrew on macOS:
 
 First, add the tap:
 ```bash
-brew tap sahitya-chandra/guardian
+brew tap sahitya-chandra/codexa
 ```
 
 Then install:
 ```bash
-brew install guardian
+brew install codexa
 ```
 
-### Updating Guardian
+### Updating Codexa
 
-To update Guardian to the latest version:
+To update codexa to the latest version:
 
 **If installed via npm:**
 ```bash
-npm install -g guardian@latest
+npm install -g codexa@latest
 ```
 
 **If installed via Homebrew:**
 ```bash
-brew upgrade guardian
+brew upgrade codexa
 ```
 
 **Check your current version:**
 ```bash
-guardian --version
+codexa --version
 ```
 
 **Check for updates:**
-- Visit the [npm package page](https://www.npmjs.com/package/guardian) to see the latest version
-- Or check the [GitHub releases](https://github.com/sahitya-chandra/guardian/releases)
+- Visit the [npm package page](https://www.npmjs.com/package/codexa) to see the latest version
+- Or check the [GitHub releases](https://github.com/sahitya-chandra/codexa/releases)
 
-> 💡 **Tip:** It's recommended to keep Guardian updated to get the latest features, bug fixes, and security updates.
+> 💡 **Tip:** It's recommended to keep Codexa updated to get the latest features, bug fixes, and security updates.
 
 ### LLM Setup
 
-Guardian requires an LLM to generate answers. You can use either Groq (cloud - recommended) or Ollama (local). Groq is recommended for its speed and reliability.
+Codexa requires an LLM to generate answers. You can use either Groq (cloud - recommended) or Ollama (local). Groq is recommended for its speed and reliability.
 
 #### Option 1: Using Groq (Cloud - Recommended)
 
@@ -175,9 +175,9 @@ echo $GROQ_API_KEY  # macOS/Linux
 echo %GROQ_API_KEY% # Windows CMD
 ```
 
-**Step 4: Configure Guardian**
+**Step 4: Configure Codexa**
 
-Guardian defaults to using Groq when you run `guardian init`. If you need to manually configure, edit `.guardianrc.json`:
+Codexa defaults to using Groq when you run `codexa init`. If you need to manually configure, edit `.codexarc.json`:
 
 ```json
 {
@@ -218,7 +218,7 @@ curl http://localhost:11434/api/tags
 
 **Step 3: Download a Model**
 
-Pull a model that Guardian can use:
+Pull a model that Codexa can use:
 
 ```bash
 # Recommended: Fast and lightweight - 3B parameters
@@ -240,9 +240,9 @@ ollama list
 
 You should see your downloaded model in the list.
 
-**Step 5: Configure Guardian**
+**Step 5: Configure Codexa**
 
-Edit `.guardianrc.json` after running `guardian init`:
+Edit `.codexarc.json` after running `codexa init`:
 
 ```json
 {
@@ -260,8 +260,8 @@ Edit `.guardianrc.json` after running `guardian init`:
 # 2. Set environment variable
 export GROQ_API_KEY="gsk_your_key"
 
-# 3. Run guardian init (defaults to Groq)
-guardian init
+# 3. Run codexa init (defaults to Groq)
+codexa init
 
 # 4. Ready to use!
 ```
@@ -278,51 +278,51 @@ ollama serve
 # 3. Pull model (use 3B models only)
 ollama pull qwen2.5:3b-instruct
 
-# 4. Update .guardianrc.json to set "modelProvider": "local"
-guardian init
-# Then edit .guardianrc.json to set modelProvider to "local"
+# 4. Update .codexarc.json to set "modelProvider": "local"
+codexa init
+# Then edit .codexarc.json to set modelProvider to "local"
 ```
 
 ## Quick Start
 
-Once Guardian is installed and your LLM is configured, you're ready to use it:
+Once Codexa is installed and your LLM is configured, you're ready to use it:
 
 1. **Navigate to your project directory:**
    ```bash
    cd /path/to/your/project
    ```
 
-2. **Initialize Guardian:**
+2. **Initialize Codexa:**
    ```bash
-   guardian init
+   codexa init
    ```
-   This creates a `.guardianrc.json` configuration file with sensible defaults.
+   This creates a `.codexarc.json` configuration file with sensible defaults.
 
 3. **Ingest your codebase:**
    ```bash
-   guardian ingest
+   codexa ingest
    ```
    This indexes your codebase and creates embeddings. First run may take a few minutes.
 
 4. **Ask questions:**
    ```bash
-   guardian ask "How does the authentication flow work?"
-   guardian ask "What is the main entry point of this application?"
-   guardian ask "Show me how error handling is implemented"
+   codexa ask "How does the authentication flow work?"
+   codexa ask "What is the main entry point of this application?"
+   codexa ask "Show me how error handling is implemented"
    ```
 
 ## Commands
 
 ### `init`
 
-Creates a `.guardianrc.json` configuration file in the current directory with default settings.
+Creates a `.codexarc.json` configuration file in the current directory with default settings.
 
 ```bash
-guardian init
+codexa init
 ```
 
 **What it does:**
-- Creates `.guardianrc.json` in the project root
+- Creates `.codexarc.json` in the project root
 - Uses sensible defaults for all configuration options
 - Can be safely run multiple times (won't overwrite existing config)
 
@@ -333,7 +333,7 @@ guardian init
 Indexes the codebase and generates embeddings for semantic search.
 
 ```bash
-guardian ingest [options]
+codexa ingest [options]
 ```
 
 **Options:**
@@ -342,17 +342,17 @@ guardian ingest [options]
 **Examples:**
 ```bash
 # Standard ingestion
-guardian ingest
+codexa ingest
 
 # Force rebuild (useful if you've updated code significantly)
-guardian ingest --force
+codexa ingest --force
 ```
 
 **What it does:**
 1. Scans your repository based on `includeGlobs` and `excludeGlobs` patterns
 2. Chunks files into manageable segments
 3. Generates vector embeddings for each chunk
-4. Stores everything in `.guardian/index.db` (SQLite database)
+4. Stores everything in `.codexa/index.db` (SQLite database)
 
 **Note:** First ingestion may take a few minutes depending on your codebase size. Subsequent ingestions are faster as they only process changed files.
 
@@ -363,7 +363,7 @@ guardian ingest --force
 Ask natural language questions about your codebase.
 
 ```bash
-guardian ask <question...> [options]
+codexa ask <question...> [options]
 ```
 
 **Arguments:**
@@ -376,19 +376,19 @@ guardian ask <question...> [options]
 **Examples:**
 ```bash
 # Basic question
-guardian ask "How does user authentication work?"
+codexa ask "How does user authentication work?"
 
 # Question with multiple words
-guardian ask "What is the main entry point of this application?"
+codexa ask "What is the main entry point of this application?"
 
 # Use a specific session for context
-guardian ask "How does the login function work?" --session my-analysis
+codexa ask "How does the login function work?" --session my-analysis
 
 # Disable streaming
-guardian ask "Summarize the codebase structure" --no-stream
+codexa ask "Summarize the codebase structure" --no-stream
 
 # Follow-up question in the same session
-guardian ask "Can you explain that in more detail?" --session my-analysis
+codexa ask "Can you explain that in more detail?" --session my-analysis
 ```
 
 **How it works:**
@@ -402,9 +402,9 @@ guardian ask "Can you explain that in more detail?" --session my-analysis
 
 ### Configuration File
 
-Guardian uses a `.guardianrc.json` file in your project root for configuration. This file is automatically created when you run `guardian init`.
+Codexa uses a `.codexarc.json` file in your project root for configuration. This file is automatically created when you run `codexa init`.
 
-**Location:** `.guardianrc.json` (project root)
+**Location:** `.codexarc.json` (project root)
 
 **Format:** JSON
 
@@ -512,7 +512,7 @@ File patterns to include in indexing. Supports glob patterns.
 #### `excludeGlobs`
 
 **Type:** `string[]`  
-**Default:** `["node_modules/**", ".git/**", "dist/**", "build/**", ".guardian/**", "package-lock.json"]`
+**Default:** `["node_modules/**", ".git/**", "dist/**", "build/**", ".codexa/**", "package-lock.json"]`
 
 File patterns to exclude from indexing.
 
@@ -532,14 +532,14 @@ File patterns to exclude from indexing.
 #### `historyDir`
 
 **Type:** `string`  
-**Default:** `".guardian/sessions"`
+**Default:** `".codexa/sessions"`
 
 Directory to store conversation history for session management.
 
 #### `dbPath`
 
 **Type:** `string`  
-**Default:** `".guardian/index.db"`
+**Default:** `".codexa/index.db"`
 
 Path to the SQLite database storing code chunks and embeddings.
 
@@ -630,40 +630,40 @@ export GROQ_API_KEY="your-api-key"
 ```bash
 # 1. Initialize in your project
 cd my-project
-guardian init
+codexa init
 
 # 2. Index your codebase
-guardian ingest
+codexa ingest
 
 # 3. Ask questions
-guardian ask "What is the main purpose of this codebase?"
-guardian ask "How does the user authentication work?"
-guardian ask "Where is the API routing configured?"
+codexa ask "What is the main purpose of this codebase?"
+codexa ask "How does the user authentication work?"
+codexa ask "Where is the API routing configured?"
 ```
 
 <!-- ### Using Sessions for Context
 
 ```bash
 # Start a new analysis session
-guardian ask "What does the UserService class do?" --session user-analysis
+codexa ask "What does the UserService class do?" --session user-analysis
 
 # Follow up with context from previous question
-guardian ask "How does it handle errors?" --session user-analysis
+codexa ask "How does it handle errors?" --session user-analysis
 
 # Ask about related functionality
-guardian ask "Show me where it's used in the codebase" --session user-analysis
+codexa ask "Show me where it's used in the codebase" --session user-analysis
 ``` -->
 
 ### Force Re-indexing
 
 ```bash
 # After significant code changes
-guardian ingest --force
+codexa ingest --force
 ```
 
 ### Working with Specific File Types
 
-Update `.guardianrc.json` to focus on specific languages:
+Update `.codexarc.json` to focus on specific languages:
 
 ```json
 {
@@ -681,20 +681,20 @@ Update `.guardianrc.json` to focus on specific languages:
 
 ## How It Works
 
-Guardian uses Retrieval-Augmented Generation (RAG) to answer questions about your codebase:
+Codexa uses Retrieval-Augmented Generation (RAG) to answer questions about your codebase:
 
 ### 1. Ingestion Phase
 
-When you run `guardian ingest`:
+When you run `codexa ingest`:
 
 1. **File Discovery**: Scans your repository using glob patterns (`includeGlobs`/`excludeGlobs`)
 2. **Code Chunking**: Splits files into manageable chunks with configurable overlap
 3. **Embedding Generation**: Creates vector embeddings for each chunk using local transformers
-4. **Storage**: Stores chunks and embeddings in a SQLite database (`.guardian/index.db`)
+4. **Storage**: Stores chunks and embeddings in a SQLite database (`.codexa/index.db`)
 
 ### 2. Query Phase
 
-When you run `guardian ask`:
+When you run `codexa ask`:
 
 1. **Question Embedding**: Converts your question into a vector embedding
 2. **Vector Search**: Finds the most similar code chunks using cosine similarity
@@ -752,7 +752,7 @@ When you run `guardian ask`:
 
 ### "Ollama not reachable" Error
 
-**Problem:** Guardian can't connect to your local Ollama instance.
+**Problem:** Codexa can't connect to your local Ollama instance.
 
 **Solutions:**
 1. Ensure Ollama is running:
@@ -763,7 +763,7 @@ When you run `guardian ask`:
    ```bash
    curl http://localhost:11434/api/tags
    ```
-3. If Ollama runs on a different host/port, update `.guardianrc.json`:
+3. If Ollama runs on a different host/port, update `.codexarc.json`:
    ```json
    {
      "localModelUrl": "http://your-host:port"
@@ -783,7 +783,7 @@ When you run `guardian ask`:
    ```bash
    ollama pull qwen2.5:3b-instruct
    ```
-3. Or update `.guardianrc.json` to use an available model:
+3. Or update `.codexarc.json` to use an available model:
    ```json
    {
      "model": "your-available-model"
@@ -834,7 +834,7 @@ When you run `guardian ask`:
    ```
 3. Re-index after significant code changes:
    ```bash
-   guardian ingest --force
+   codexa ingest --force
    ```
 4. If using local Ollama, try a 3B parameter model (models larger than 3B may not work reliably locally)
 5. Ask more specific questions
@@ -844,7 +844,7 @@ When you run `guardian ask`:
 **Problem:** SQLite database is locked (multiple processes accessing it).
 
 **Solutions:**
-1. Ensure only one `guardian` process runs at a time
+1. Ensure only one `codexa` process runs at a time
 2. If using concurrent processes, each should use a different `dbPath`
 
 ### Missing Files in Index
@@ -852,36 +852,36 @@ When you run `guardian ask`:
 **Problem:** Some files aren't being indexed.
 
 **Solutions:**
-1. Check `includeGlobs` patterns in `.guardianrc.json`
+1. Check `includeGlobs` patterns in `.codexarc.json`
 2. Verify files aren't excluded by `excludeGlobs`
 3. Run with `--force` to rebuild:
    ```bash
-   guardian ingest --force
+   codexa ingest --force
    ```
-4. Check file permissions (ensure Guardian can read the files)
+4. Check file permissions (ensure Codexa can read the files)
 
 ## FAQ
 
-**Q: Can I use Guardian with private/confidential code?**  
-A: Yes! Guardian processes everything locally by default. Your code never leaves your machine unless you explicitly use cloud providers like Groq.
+**Q: Can I use Codexa with private/confidential code?**  
+A: Yes! Codexa processes everything locally by default. Your code never leaves your machine unless you explicitly use cloud providers like Groq.
 
-**Q: How much disk space does Guardian use?**  
+**Q: How much disk space does Codexa use?**  
 A: Typically 10-50MB per 1000 files, depending on file sizes. The SQLite database stores chunks and embeddings.
 
-**Q: Can I use Guardian in CI/CD?**  
+**Q: Can I use Codexa in CI/CD?**  
 A: Yes, but you'll need to ensure Ollama or your LLM provider is accessible. For CI/CD, consider using Groq (cloud) instead of local Ollama.
 
-**Q: Does Guardian work with monorepos?**  
+**Q: Does Codexa work with monorepos?**  
 A: Yes! Adjust `includeGlobs` and `excludeGlobs` to target specific packages or workspaces.
 
 **Q: Can I use multiple LLM providers?**  
-A: You can switch providers by updating `modelProvider` in `.guardianrc.json`. Each repository can have its own configuration.
+A: You can switch providers by updating `modelProvider` in `.codexarc.json`. Each repository can have its own configuration.
 
 **Q: How often should I re-index?**  
-A: Guardian only processes changed files on subsequent runs, so you can run `ingest` frequently. Use `--force` only when you need a complete rebuild.
+A: Codexa only processes changed files on subsequent runs, so you can run `ingest` frequently. Use `--force` only when you need a complete rebuild.
 
 **Q: Is there a way to query the database directly?**  
-A: The SQLite database (`.guardian/index.db`) can be queried directly, but the schema is internal. Use Guardian's commands for all operations.
+A: The SQLite database (`.codexa/index.db`) can be queried directly, but the schema is internal. Use Codexa's commands for all operations.
 
 **Q: Can I customize the prompt sent to the LLM?**  
 A: Currently, the prompt is fixed, but this may be configurable in future versions.
@@ -908,9 +908,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <p>Made with ❤️ by the Guardian team</p>
+  <p>Made with ❤️ by the Codexa team</p>
   <p>
-    <a href="https://github.com/sahitya-chandra/guardian/issues">Report Bug</a> •
-    <a href="https://github.com/sahitya-chandra/guardian/issues">Request Feature</a>
+    <a href="https://github.com/sahitya-chandra/codexa/issues">Report Bug</a> •
+    <a href="https://github.com/sahitya-chandra/codexa/issues">Request Feature</a>
   </p>
 </div>

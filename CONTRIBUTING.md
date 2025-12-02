@@ -1,6 +1,6 @@
-# Contributing to Guardian
+# Contributing to Codexa
 
-Thank you for your interest in contributing to Guardian! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to Codexa! This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -58,8 +58,8 @@ We welcome feature suggestions! Please open an issue with:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/sahitya-chandra/guardian.git
-   cd guardian
+   git clone https://github.com/sahitya-chandra/codexa.git
+   cd codexa
    ```
 
 2. **Install dependencies**:
@@ -124,7 +124,7 @@ docs: update installation instructions
 ## Project Structure
 
 ```
-guardian/
+codexa/
 ├── src/              # TypeScript source files
 │   ├── agent.ts      # Main agent logic
 │   ├── chunker.ts    # Code chunking
@@ -177,5 +177,5 @@ Releases are handled by maintainers. After your PR is merged:
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
 
-Thank you for contributing to Guardian! 🎉
+Thank you for contributing to Codexa! 🎉
 

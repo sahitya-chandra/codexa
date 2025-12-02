@@ -1,9 +1,9 @@
 {
-  "name": "guardian-cli",
+  "name": "codexa",
   "version": "0.1.0",
   "description": "CLI agent that indexes local repos and answers questions with hosted or local LLMs.",
   "bin": {
-    "guardian": "bin/guardian.js"
+    "codexa": "bin/codexa.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -27,11 +27,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahitya-chandra/guardian.git"
+    "url": "https://github.com/sahitya-chandra/codexa.git"
   },
-  "homepage": "https://github.com/sahitya-chandra/guardian#readme",
+  "homepage": "https://github.com/sahitya-chandra/codexa#readme",
   "bugs": {
-    "url": "https://github.com/sahitya-chandra/guardian/issues"
+    "url": "https://github.com/sahitya-chandra/codexa/issues"
   },
   "files": [
     "bin",

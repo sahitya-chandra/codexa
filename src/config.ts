@@ -5,7 +5,7 @@ import { AgentConfig } from './types';
 
 dotenv.config();
 
-const CONFIG_FILENAME = '.guardianrc.json';
+const CONFIG_FILENAME = '.codexarc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'groq',
@@ -33,11 +33,11 @@ const DEFAULT_CONFIG: AgentConfig = {
     '.git/**',
     'dist/**',
     'build/**',
-    '.guardian/**',
+    '.codexa/**',
     'package-lock.json',
   ],
-  historyDir: '.guardian/sessions',
-  dbPath: '.guardian/index.db',
+  historyDir: '.codexa/sessions',
+  dbPath: '.codexa/index.db',
   temperature: 0.2,
   topK: 5,
 };
