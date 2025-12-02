@@ -53,7 +53,7 @@ program
     //   --no-stream => stream = false
     const stream = options.stream !== false;
 
-    const spinner = ora('Retrieving context...').start();
+    const spinner = ora('Extracting Response...').start();
 
     try {
       const answer = await askQuestion(cwd, config, {

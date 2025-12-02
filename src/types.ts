@@ -1,5 +1,5 @@
-export type ModelProvider = 'openai' | 'local';
-export type EmbeddingProvider = 'openai' | 'local';
+export type ModelProvider = 'groq' | 'local';
+export type EmbeddingProvider = 'local';
 
 export interface AgentConfig {
   modelProvider: ModelProvider;

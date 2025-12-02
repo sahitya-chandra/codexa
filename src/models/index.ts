@@ -1,11 +1,12 @@
-import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import fetch from 'node-fetch';
 import { AgentConfig } from '../types';
 import { Readable } from 'stream';
+import { generateText, ModelMessage, streamText } from 'ai';
+import { createGroq } from '@ai-sdk/groq';
 
 export interface LLMClient {
   generate(
-    messages: ChatCompletionMessageParam[],
+    messages: ModelMessage[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string>;
 }
@@ -17,7 +18,7 @@ class OllamaLLM implements LLMClient {
   ) {}
 
   async generate(
-    messages: ChatCompletionMessageParam[],
+    messages: ModelMessage[],
     options?: { stream?: boolean; onToken?: (token: string) => void },
   ): Promise<string> {
     const prompt = messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
@@ -97,6 +98,47 @@ class OllamaLLM implements LLMClient {
   }
 }
 
+class GroqLLM implements LLMClient {
+  private groq: ReturnType<typeof createGroq>;
+
+  constructor(
+    private model: string,
+    private apiKey?: string,
+  ) {
+    this.groq = createGroq({
+      apiKey: this.apiKey,
+    });
+  }
+
+  async generate(
+    messages: ModelMessage[],
+    options?: { stream?: boolean; onToken?: (token: string) => void },
+  ): Promise<string> {
+    const modelId = this.model;
+
+    if (!options?.stream) {
+      const { text } = await generateText({
+        model: this.groq(modelId),
+        messages,
+      });
+      return text;
+    }
+
+    const result = streamText({
+      model: this.groq(modelId),
+      messages,
+    });
+
+    let fullText = '';
+    for await (const textPart of result.textStream) {
+      fullText += textPart;
+      options.onToken?.(textPart);
+    }
+
+    return fullText;
+  }
+}
+
 export function createLLMClient(config: AgentConfig): LLMClient {
   if (config.modelProvider === 'local') {
     const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
@@ -105,6 +147,14 @@ export function createLLMClient(config: AgentConfig): LLMClient {
     }
 
     return new OllamaLLM(config.model, base);
+  }
+
+  if (config.modelProvider === 'groq') {
+    if (process.env.AGENT_DEBUG) {
+      console.error('Using Groq client:', config.model);
+    }
+
+    return new GroqLLM(config.model, process.env.GROQ_API_KEY);
   }
 
   throw new Error('Only local provider supported for now.');

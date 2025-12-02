@@ -1,6 +1,6 @@
 node_modules
 dist
-.agent
+.guardian
 .env
 .DS_Store
 *.log

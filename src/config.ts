@@ -14,7 +14,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   localModelUrl: 'http://localhost:11434',
   localModelApiKey: '',
-  maxChunkSize: 300,
+  maxChunkSize: 200,
   chunkOverlap: 20,
   includeGlobs: [
     '**/*.ts',
@@ -28,7 +28,7 @@ const DEFAULT_CONFIG: AgentConfig = {
     '**/*.md',
     '**/*.json',
   ],
-  excludeGlobs: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.guardian/**'],
+  excludeGlobs: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.guardian/**', 'package-lock.json'],
   historyDir: '.guardian/sessions',
   dbPath: '.guardian/index.db',
   temperature: 0.2,

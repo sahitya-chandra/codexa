@@ -1,6 +1,6 @@
 {
   "modelProvider": "local",
-  "model": "qwen2.5-coder",
+  "model": "qwen2.5:3b-instruct",
   "localModelUrl": "http://localhost:11434/v1",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
