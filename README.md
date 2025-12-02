@@ -1,7 +1,7 @@
 <div align="center">
-  <img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/9d347801-9e39-494b-8645-17c0804223e3" />
-  
   <h1>Codexa</h1>
+  
+  <img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/9d347801-9e39-494b-8645-17c0804223e3" />
   
   <p>
     <strong>A powerful CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
