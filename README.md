@@ -4,14 +4,14 @@
   <h1>Guardian</h1>
   
   <p>
-    <strong>A powerful, local-first CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
+    <strong>A powerful CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
   </p>
   
   <p>
     <a href="https://www.npmjs.com/package/guardian"><img src="https://img.shields.io/npm/v/guardian?style=flat-square" alt="npm version"></a>
     <a href="https://github.com/sahitya-chandra/guardian/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License"></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/language-TypeScript-blue.svg?style=flat-square" alt="TypeScript"></a>
-    <img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg?style=flat-square" alt="Node.js version">
+    <img src="https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg?style=flat-square" alt="Node.js version">
   </p>
   
   <p>
@@ -63,9 +63,9 @@
 
 Before installing Guardian, ensure you have the following:
 
-- **Node.js**: v18.0.0 or higher
+- **Node.js**: v20.0.0 or higher
   ```bash
-  node --version  # Should be v18.0.0 or higher
+  node --version  # Should be v20.0.0 or higher
   ```
 
 - **For Local LLM (Ollama)**: [Ollama](https://ollama.com/) must be installed
@@ -641,7 +641,7 @@ guardian ask "How does the user authentication work?"
 guardian ask "Where is the API routing configured?"
 ```
 
-### Using Sessions for Context
+<!-- ### Using Sessions for Context
 
 ```bash
 # Start a new analysis session
@@ -652,7 +652,7 @@ guardian ask "How does it handle errors?" --session user-analysis
 
 # Ask about related functionality
 guardian ask "Show me where it's used in the codebase" --session user-analysis
-```
+``` -->
 
 ### Force Re-indexing
 

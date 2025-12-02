@@ -8,14 +8,14 @@ dotenv.config();
 const CONFIG_FILENAME = '.guardianrc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
-  modelProvider: 'local',
-  model: 'qwen2.5:3b-instruct',
+  modelProvider: 'groq',
+  model: 'llama-3.1-8b-instant',
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   localModelUrl: 'http://localhost:11434',
   localModelApiKey: '',
-  maxChunkSize: 200,
-  chunkOverlap: 20,
+  maxChunkSize: 300,
+  chunkOverlap: 30,
   includeGlobs: [
     '**/*.ts',
     '**/*.tsx',
@@ -39,7 +39,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   historyDir: '.guardian/sessions',
   dbPath: '.guardian/index.db',
   temperature: 0.2,
-  topK: 4,
+  topK: 5,
 };
 
 export async function ensureConfig(cwd: string): Promise<AgentConfig> {
