@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="2816" height="1536" alt="Guardian" src="https://raw.githubusercontent.com/sahitya-chandra/guardian/main/.github/assets/logo.png" />
+  <img width="1536" height="1024" alt="Image" src="https://github.com/user-attachments/assets/af27a02e-d796-4f03-95f6-3f03e3f2d03c" />
   
   <h1>Guardian</h1>
   
