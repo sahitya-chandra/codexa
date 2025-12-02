@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export function CopyCommand() {
   const [copied, setCopied] = useState(false);
-  const command = "npm install -g guardian-cli";
+  const command = "npm install -g guardian";
 
   const onCopy = () => {
     navigator.clipboard.writeText(command);

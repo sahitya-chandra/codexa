@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 
 export default function DocsLayout({
   children,
@@ -9,65 +7,59 @@ export default function DocsLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <div className="container mx-auto flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-        <aside className="fixed top-14 z-30 -ml-2 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 overflow-y-auto border-r md:sticky md:block">
-          <div className="h-full py-6 pl-8 pr-6 lg:py-8">
-            <div className="w-full">
-              <div className="pb-4">
-                <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
-                  Getting Started
-                </h4>
-                <div className="grid grid-flow-row auto-rows-max text-sm">
-                  <Link
-                    href="/docs"
-                    className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline text-foreground font-medium"
-                  >
-                    Introduction
-                  </Link>
-                  <Link
-                    href="#"
-                    className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline text-muted-foreground"
-                  >
-                    Installation
-                  </Link>
-                  <Link
-                    href="#"
-                    className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline text-muted-foreground"
-                  >
-                    Configuration
-                  </Link>
-                </div>
-              </div>
-              <div className="pb-4">
-                <h4 className="mb-1 rounded-md px-2 py-1 text-sm font-semibold">
-                  API Reference
-                </h4>
-                <div className="grid grid-flow-row auto-rows-max text-sm">
-                  <Link
-                    href="#"
-                    className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline text-muted-foreground"
-                  >
-                    CLI Commands
-                  </Link>
-                  <Link
-                    href="#"
-                    className="group flex w-full items-center rounded-md border border-transparent px-2 py-1 hover:underline text-muted-foreground"
-                  >
-                    Configuration Options
-                  </Link>
-                </div>
-              </div>
-            </div>
+      {/* Simple Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+          <Link href="/" className="text-lg font-semibold hover:opacity-80 transition-opacity">
+            Guardian
+          </Link>
+          <nav className="flex items-center gap-6 text-sm">
+            <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              Home
+            </Link>
+            <Link href="/docs" className="text-foreground font-medium">
+              Docs
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      {/* Simple Content Area */}
+      <main className="flex-1">
+        <div className="container mx-auto max-w-3xl px-4 md:px-6 py-12">
+          {children}
+        </div>
+      </main>
+
+      {/* Simple Footer */}
+      <footer className="border-t py-6">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex justify-center gap-8 text-sm">
+            <Link 
+              href="/docs" 
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              [docs]
+            </Link>
+            <Link 
+              href="https://github.com/sahitya-chandra/guardian" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              [github]
+            </Link>
+            <Link 
+              href="https://www.npmjs.com/package/guardian" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              [npm]
+            </Link>
           </div>
-        </aside>
-        <main className="relative py-6 lg:gap-10 lg:py-8 xl:grid xl:grid-cols-[1fr_300px]">
-          <div className="mx-auto w-full min-w-0">
-            {children}
-          </div>
-        </main>
-      </div>
-      <Footer />
+        </div>
+      </footer>
     </div>
   );
 }

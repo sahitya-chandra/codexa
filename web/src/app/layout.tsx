@@ -14,30 +14,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "GuardianCLI - The Ultimate CLI for Modern Developers",
-    template: "%s | GuardianCLI",
+    default: "Guardian",
+    template: "%s | Guardian",
   },
-  description: "Build, deploy, and manage your applications with speed and precision. GuardianCLI is designed for efficiency and built for scale.",
+  description: "Ask questions about your codebase. A powerful CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://guardian-cli.app",
-    title: "GuardianCLI - The Ultimate CLI for Modern Developers",
-    description: "Build, deploy, and manage your applications with speed and precision.",
-    siteName: "GuardianCLI",
+    url: "https://github.com/sahitya-chandra/guardian",
+    title: "Guardian",
+    description: "Ask questions about your codebase. A powerful CLI tool that ingests your codebase and allows you to ask questions about it using RAG.",
+    siteName: "Guardian",
     images: [
       {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "GuardianCLI",
+        alt: "Guardian",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "GuardianCLI - The Ultimate CLI for Modern Developers",
-    description: "Build, deploy, and manage your applications with speed and precision.",
+    title: "Guardian",
+    description: "Ask questions about your codebase. A powerful CLI tool that ingests your codebase and allows you to ask questions about it using RAG.",
     images: ["/api/og"],
     creator: "@sahitya_chandra",
   },
