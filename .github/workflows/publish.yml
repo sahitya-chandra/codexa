@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,7 +25,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
@@ -40,13 +40,12 @@ jobs:
           test -f dist/cli.js || exit 1
           test -f bin/codexa.js || exit 1
 
-      - name: Publish to npm
+      - name: Publish to npm (trusted publishing)
         if: github.event_name == 'release'
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        uses: actions/publish-npm@v4
+        with:
+          provenance: true
 
       - name: Dry run publish (manual trigger)
         if: github.event_name == 'workflow_dispatch'
         run: npm publish --dry-run
-

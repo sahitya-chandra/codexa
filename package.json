@@ -27,7 +27,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahitya-chandra/codexa.git"
+    "url": "git+https://github.com/sahitya-chandra/codexa.git"
   },
   "homepage": "https://github.com/sahitya-chandra/codexa#readme",
   "bugs": {
