@@ -9,13 +9,13 @@ const CONFIG_FILENAME = '.codexarc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'groq',
-  model: 'llama-3.1-8b-instant',
+  model: 'llama-3.1-8b-instant', // can also use llama-3.3-70b-versatile for better perf
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   localModelUrl: 'http://localhost:11434',
   localModelApiKey: '',
-  maxChunkSize: 300,
-  chunkOverlap: 30,
+  maxChunkSize: 800,
+  chunkOverlap: 100,
   includeGlobs: [
     '**/*.ts',
     '**/*.tsx',
@@ -26,7 +26,6 @@ const DEFAULT_CONFIG: AgentConfig = {
     '**/*.rs',
     '**/*.java',
     '**/*.md',
-    '**/*.json',
   ],
   excludeGlobs: [
     'node_modules/**',
@@ -39,7 +38,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   historyDir: '.codexa/sessions',
   dbPath: '.codexa/index.db',
   temperature: 0.2,
-  topK: 5,
+  topK: 10,
 };
 
 export async function ensureConfig(cwd: string): Promise<AgentConfig> {

@@ -5,15 +5,20 @@ import { createLLMClient } from './models';
 import type { AgentConfig, AskOptions } from './types';
 
 const SYSTEM_PROMPT = `
-You are RepoSage.
-You answer questions about a codebase using ONLY the provided code snippets.
+You are RepoSage, an expert codebase assistant that answers questions about codebases using the provided code snippets.
 
-Rules:
-- Use the CODE_SNIPPET sections only.
-- Do NOT hallucinate missing files.
-- If the context does not contain enough information, say:
-  "The provided context does not contain that information."
-- Keep answers short, direct, and technical.
+Your task is to provide accurate, helpful, and comprehensive answers based on the code context provided.
+
+Guidelines:
+- Analyze the CODE_SNIPPET sections carefully to understand the codebase structure and functionality
+- When answering questions about entry points, look for main files, CLI files, index files, or package.json scripts
+- When answering questions about functionality, explain how things work based on the actual code provided
+- When asked for summaries, provide a comprehensive overview based on the files and code snippets you see
+- Reference specific files and line numbers when relevant (from the FILE headers)
+- If the context contains enough information, provide detailed and thorough answers
+- Only say "The provided context does not contain that information" if you genuinely cannot find relevant information in the code snippets
+- Be helpful and descriptive - explain concepts clearly, not just briefly
+- You can combine information from multiple code snippets to provide a complete answer
 `;
 
 export async function askQuestion(
@@ -37,7 +42,13 @@ export async function askQuestion(
     ...history,
     {
       role: 'user',
-      content: `CONTEXT:\n${context}\n\nQUESTION: ${question}\nANSWER:`,
+      content: `Based on the following code snippets from the codebase, please answer the question.
+
+      ${context}
+
+      Question: ${question}
+
+      Please provide a comprehensive and helpful answer based on the code context above.`,
     },
   ];
 

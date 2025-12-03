@@ -15,11 +15,18 @@ export async function retrieveContext(
 }
 
 export function formatContext(results: RetrievalResult[]): string {
+  // Max characters per chunk to avoid token limit issues
+  const MAX_CHUNK_DISPLAY_LENGTH = 1500;
+  
   return results
-    .map((r) => {
-      const snippet = r.compressed ?? r.content.slice(0, 300);
-      return `FILE: ${r.filePath}:${r.startLine}-${r.endLine}
-CODE_SNIPPET: ${snippet}`;
+    .map((r, index) => {
+      let content = r.content || '';
+      if (content.length > MAX_CHUNK_DISPLAY_LENGTH) {
+        content = content.slice(0, MAX_CHUNK_DISPLAY_LENGTH) + '\n... (truncated)';
+      }
+      return `[${index + 1}] FILE: ${r.filePath}:${r.startLine}-${r.endLine}
+CODE_SNIPPET:
+${content}`;
     })
     .join('\n\n---\n\n');
 }

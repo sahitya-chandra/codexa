@@ -38,6 +38,26 @@ interface ChunkRow {
   embedding: string;
 }
 
+function shouldSkipFileForSearch(filePath: string): boolean {
+  const lower = filePath.toLowerCase();
+
+  if (
+    lower.includes('node_modules/') ||
+    lower.includes('/dist/') ||
+    lower.includes('/build/') ||
+    lower.includes('/.git/') ||
+    lower.endsWith('package-lock.json') ||
+    lower.endsWith('yarn.lock') ||
+    lower.endsWith('pnpm-lock.yaml') ||
+    lower.endsWith('.lock') ||
+    lower.endsWith('.log')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 export class VectorStore {
   private db: Database.Database | null = null;
 
@@ -113,6 +133,10 @@ export class VectorStore {
     const minScore = { value: -Infinity };
 
     for (const row of rows) {
+      if (shouldSkipFileForSearch(row.file_path)) {
+        continue;
+      }
+
       const embedding = JSON.parse(row.embedding) as number[];
       const score = cosineSimilarity(queryEmbedding, embedding);
 
