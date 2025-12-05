@@ -38,8 +38,12 @@ interface ChunkRow {
   embedding: string;
 }
 
-function shouldSkipFileForSearch(filePath: string): boolean {
+function shouldSkipFileForSearch(filePath: string, excludeMarkdown: boolean = false): boolean {
   const lower = filePath.toLowerCase();
+
+  if (excludeMarkdown && (lower.endsWith('.md') || lower.includes('readme'))) {
+    return true;
+  }
 
   if (
     lower.includes('node_modules/') ||
@@ -115,7 +119,47 @@ export class VectorStore {
     tx(chunks);
   }
 
-  search(queryEmbedding: number[], topK: number): RetrievalResult[] {
+  getChunksByFilePath(filePathPattern: string, maxChunks: number = 10): RetrievalResult[] {
+    const db = this.connection;
+    if (!filePathPattern || filePathPattern.trim() === '') {
+      // Return all chunks if no pattern
+      const rows = db.prepare('SELECT * FROM chunks').all() as ChunkRow[];
+      return rows.slice(0, maxChunks).map((row) => ({
+        filePath: row.file_path,
+        startLine: row.start_line,
+        endLine: row.end_line,
+        content: row.content,
+        compressed: row.compressed ?? '',
+        embedding: JSON.parse(row.embedding) as number[],
+        score: 1.0,
+      }));
+    }
+    
+    const fileName = filePathPattern.split('/').pop() || filePathPattern;
+    const rows = db
+      .prepare(
+        `SELECT * FROM chunks WHERE file_path LIKE ? OR file_path LIKE ? OR file_path = ? OR file_path LIKE ? LIMIT ?`,
+      )
+      .all(
+        `%${filePathPattern}%`,
+        `%${fileName}%`,
+        filePathPattern,
+        `%/${fileName}%`,
+        maxChunks,
+      ) as ChunkRow[];
+
+    return rows.map((row) => ({
+      filePath: row.file_path,
+      startLine: row.start_line,
+      endLine: row.end_line,
+      content: row.content,
+      compressed: row.compressed ?? '',
+      embedding: JSON.parse(row.embedding) as number[],
+      score: 1.0, 
+    }));
+  }
+
+  search(queryEmbedding: number[], topK: number, excludeMarkdown: boolean = false): RetrievalResult[] {
     const db = this.connection;
     const rows = db.prepare('SELECT * FROM chunks').all() as ChunkRow[];
 
@@ -133,7 +177,7 @@ export class VectorStore {
     const minScore = { value: -Infinity };
 
     for (const row of rows) {
-      if (shouldSkipFileForSearch(row.file_path)) {
+      if (shouldSkipFileForSearch(row.file_path, excludeMarkdown)) {
         continue;
       }
 

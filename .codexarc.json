@@ -1,6 +1,6 @@
 {
   "modelProvider": "groq",
-  "model": "llama-3.3-70b-versatile",
+  "model": "llama-3.1-8b-instant",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
   "localModelUrl": "http://localhost:11434",
@@ -16,7 +16,7 @@
     "**/*.go",
     "**/*.rs",
     "**/*.java",
-    "README.md"
+    "**/*.md"
   ],
   "excludeGlobs": [
     "node_modules/**",
@@ -25,10 +25,12 @@
     "build/**",
     ".codexa/**",
     "package-lock.json",
-    "LICENCE"
+    "LICENCE",
+    "**/*.txt",
+    "web/content/docs/**"
   ],
   "historyDir": ".codexa/sessions",
   "dbPath": ".codexa/index.db",
   "temperature": 0.1,
-  "topK": 6
+  "topK": 10
 }

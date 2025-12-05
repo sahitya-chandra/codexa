@@ -1,9 +1,12 @@
+import { performance } from 'node:perf_hooks';
 import path from 'node:path';
+import cliProgress from 'cli-progress';
 import { globby } from 'globby';
 import { AgentConfig, FileChunk } from './types';
 import { chunkFile } from './chunker';
 import { createEmbedder } from './embeddings';
 import { VectorStore } from './db';
+import { formatStats } from './utils/formatter';
 import ora from 'ora';
 
 function compressText(text: string, cap = 800) {
@@ -91,6 +94,7 @@ export async function ingestRepository({
   config: AgentConfig;
   force?: boolean;
 }) {
+  const startedAt = performance.now();
   const spinnerFiles = ora('Finding files...').start();
   const files = await globby(config.includeGlobs, {
     cwd,
@@ -122,18 +126,30 @@ export async function ingestRepository({
   chunks.forEach((c) => (c.compressed = compressText(c.content)));
   spinnerCompress.succeed('Compression complete');
 
-  const spinnerEmbed = ora('Embedding chunks... (this will take sometime)').start();
+  const spinnerEmbed = ora('Preparing embeddings (this will take sometime)...').start();
   const embedder = await createEmbedder(config);
 
+  const progress = new cliProgress.SingleBar(
+    {
+      format: 'Embedding |{bar}| {percentage}% | {value}/{total} chunks',
+      barCompleteChar: '\u2588',
+      barIncompleteChar: '\u2591',
+    },
+    cliProgress.Presets.shades_classic,
+  );
+
   const batchSize = 32;
+  progress.start(chunks.length, 0);
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batch = chunks.slice(i, i + batchSize);
     const texts = batch.map((c) => c.content);
     const vectors = await embedder.embed(texts);
     batch.forEach((c, idx) => (c.embedding = vectors[idx]));
 
+    progress.increment(batch.length);
     await tick();
   }
+  progress.stop();
   spinnerEmbed.succeed('Embedding complete');
 
   const spinnerStore = ora('Storing chunks...').start();
@@ -144,5 +160,19 @@ export async function ingestRepository({
 
   spinnerStore.succeed('Stored successfully');
 
+  const durationSec = (performance.now() - startedAt) / 1000;
   ora().succeed('Ingestion complete!');
+  const avgChunkSize =
+    chunks.length === 0
+      ? 0
+      : chunks.reduce((sum, c) => sum + c.content.split('\n').length, 0) / chunks.length;
+
+  console.log(
+    formatStats({
+      files: files.length,
+      chunks: chunks.length,
+      avgChunkSize,
+      durationSec,
+    }),
+  );
 }

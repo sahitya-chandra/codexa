@@ -18,6 +18,10 @@ export interface AgentConfig {
   dbPath: string;
   temperature: number;
   topK: number;
+  prioritizeCodeFiles?: boolean;
+  excludeMarkdownFiles?: boolean;
+  codeFileBoost?: number;
+  markdownFilePenalty?: number;
 }
 
 export interface FileChunk {

@@ -5,6 +5,15 @@ import { ensureConfig, loadConfig } from './config';
 import { ingestRepository } from './ingest';
 import { askQuestion } from './agent';
 import { log } from './utils/logger';
+import { formatQuestion } from './utils/formatter';
+import { marked } from 'marked';
+import TerminalRenderer from 'marked-terminal';
+
+marked.setOptions({
+  renderer: new TerminalRenderer({
+    tab: 2,
+  }),
+});
 
 const program = new Command();
 
@@ -42,17 +51,16 @@ program
   .description('Ask a natural-language question about the current repo.')
   .argument('<question...>', 'Question to ask about the codebase.')
   .option('-s, --session <name>', 'session identifier to keep conversation context', 'default')
-  .option('--no-stream', 'disable streaming output')
+  .option('--stream', 'enable streaming output')
   .action(async (question: string[], options: { session?: string; stream?: boolean }) => {
     const cwd = process.cwd();
     const config = await loadConfig(cwd);
     const prompt = question.join(' ');
 
-    // Commander behavior:
-    //   default: stream = true
-    //   --no-stream => stream = false
-    const stream = options.stream !== false;
+    // dfefault: non-streamed output
+    const stream = options.stream === true;
 
+    console.log(formatQuestion(prompt));
     const spinner = ora('Extracting Response...').start();
 
     try {
@@ -71,11 +79,12 @@ program
         },
       });
 
-      spinner.stop();
-
       if (!stream) {
-        console.log('\n' + answer.trim() + '\n');
+        const rendered = marked.parse(answer.trim());
+        spinner.stop();
+        console.log('\n' + rendered + '\n');
       } else {
+        spinner.stop();
         console.log('\n');
       }
     } catch (error) {
