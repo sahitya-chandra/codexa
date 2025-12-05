@@ -21,7 +21,16 @@ describe('retriever', () => {
 
     const mockStore = {
       init: vi.fn(),
-      search: vi.fn().mockReturnValue([{ content: 'match' }]),
+      search: vi.fn().mockReturnValue([
+        {
+          content: 'match',
+          filePath: 'file1.ts',
+          startLine: 1,
+          endLine: 5,
+          score: 0.9,
+        },
+      ]),
+      getChunksByFilePath: vi.fn().mockReturnValue([]),
     };
     (
       VectorStore as unknown as { mockImplementation: (fn: () => typeof mockStore) => void }
@@ -37,8 +46,16 @@ describe('retriever', () => {
     const results = await retrieveContext('query', config);
 
     expect(mockEmbedder.embed).toHaveBeenCalledWith(['query']);
-    expect(mockStore.search).toHaveBeenCalledWith([0.1, 0.2], 5);
-    expect(results).toEqual([{ content: 'match' }]);
+    expect(mockStore.search).toHaveBeenCalledWith([0.1, 0.2], 20);
+    expect(results).toEqual([
+      {
+        content: 'match',
+        filePath: 'file1.ts',
+        startLine: 1,
+        endLine: 5,
+        score: 1.1700000000000002, // 0.9 * 1.3 (priority for .ts files)
+      },
+    ]);
   });
 
   it('should format context', () => {
@@ -64,8 +81,8 @@ describe('retriever', () => {
     const formatted = formatContext(results as unknown as import('../src/types').RetrievalResult[]);
 
     expect(formatted).toContain('FILE: file1.ts:1-5');
-    expect(formatted).toContain('CODE_SNIPPET: code1');
+    expect(formatted).toContain('CODE_SNIPPET:\ncode1');
     expect(formatted).toContain('FILE: file2.ts:10-15');
-    expect(formatted).toContain('CODE_SNIPPET: code2');
+    expect(formatted).toContain('CODE_SNIPPET:\ncode2');
   });
 });
