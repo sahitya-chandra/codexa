@@ -52,4 +52,3 @@ export function formatStats(stats: {
     { borderColor: 'green', padding: 1, margin: 1 },
   );
 }
-

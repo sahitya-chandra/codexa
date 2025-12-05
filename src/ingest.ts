@@ -30,7 +30,7 @@ function tick() {
 //   onProgress?: (processed: number, total: number) => void
 // ) {
 //   const totalChunks = chunks.length;
-  
+
 //   // Pre-create batches to avoid race conditions during batch creation
 //   const batches: any[][] = [];
 //   for (let i = 0; i < chunks.length; i += batchSize) {
@@ -43,22 +43,22 @@ function tick() {
 //   // Use a shared counter with proper synchronization
 //   let batchIndex = 0;
 //   let processedCount = 0;
-  
+
 //   // Helper to atomically get next batch index
 //   function getNextBatchIndex(): number {
 //     const current = batchIndex;
 //     batchIndex++;
 //     return current;
 //   }
-  
+
 //   async function processBatch() {
 //     while (true) {
 //       const index = getNextBatchIndex();
-      
+
 //       if (index >= batches.length) {
 //         return;
 //       }
-      
+
 //       const currentBatch = batches[index];
 //       if (!currentBatch || currentBatch.length === 0) {
 //         return;
@@ -69,7 +69,7 @@ function tick() {
 //         const texts = currentBatch.map((c: any) => c.content);
 //         const vectors = await embedFunc(texts);
 //         currentBatch.forEach((c: any, idx: number) => (c.embedding = vectors[idx]));
-        
+
 //         // Update progress atomically (JavaScript single-threaded, but good practice)
 //         processedCount += currentBatch.length;
 //         if (onProgress) {

@@ -134,7 +134,7 @@ export class VectorStore {
         score: 1.0,
       }));
     }
-    
+
     const fileName = filePathPattern.split('/').pop() || filePathPattern;
     const rows = db
       .prepare(
@@ -155,11 +155,15 @@ export class VectorStore {
       content: row.content,
       compressed: row.compressed ?? '',
       embedding: JSON.parse(row.embedding) as number[],
-      score: 1.0, 
+      score: 1.0,
     }));
   }
 
-  search(queryEmbedding: number[], topK: number, excludeMarkdown: boolean = false): RetrievalResult[] {
+  search(
+    queryEmbedding: number[],
+    topK: number,
+    excludeMarkdown: boolean = false,
+  ): RetrievalResult[] {
     const db = this.connection;
     const rows = db.prepare('SELECT * FROM chunks').all() as ChunkRow[];
 

@@ -12,6 +12,7 @@ export default [
   {
     rules: {
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-useless-escape': 'off',
     },
   },
   {
