@@ -5,45 +5,7 @@ description: Common questions and troubleshooting for Codexa.
 
 ## Troubleshooting
 
-### "Ollama not reachable" Error
 
-**Problem:** Codexa can't connect to your local Ollama instance.
-
-**Solutions:**
-1. Ensure Ollama is running:
-   ```bash
-   ollama serve
-   ```
-2. Check if Ollama is running on the default port:
-   ```bash
-   curl http://localhost:11434/api/tags
-   ```
-3. If Ollama runs on a different host/port, update `.codexarc.json`:
-   ```json
-   {
-     "localModelUrl": "http://your-host:port"
-   }
-   ```
-
-### "Model not found" Error
-
-**Problem:** The specified Ollama model isn't available.
-
-**Solutions:**
-1. List available models:
-   ```bash
-   ollama list
-   ```
-2. Pull the required model:
-   ```bash
-   ollama pull qwen2.5:3b-instruct
-   ```
-3. Or update `.codexarc.json` to use an available model:
-   ```json
-   {
-     "model": "your-available-model"
-   }
-   ```
 
 ### "GROQ_API_KEY not set" Error
 
@@ -91,7 +53,7 @@ description: Common questions and troubleshooting for Codexa.
    ```bash
    codexa ingest --force
    ```
-4. If using local Ollama, try a 3B parameter model (models larger than 3B may not work reliably locally)
+
 5. Ask more specific questions
 
 ### Database Locked Error
@@ -124,7 +86,7 @@ Yes! Codexa processes everything locally by default. Your code never leaves your
 Typically 10-50MB per 1000 files, depending on file sizes. The SQLite database stores chunks and embeddings.
 
 ### Can I use Codexa in CI/CD?
-Yes, but you'll need to ensure Ollama or your LLM provider is accessible. For CI/CD, consider using Groq (cloud) instead of local Ollama.
+Yes, but you'll need to ensure your LLM provider is accessible. For CI/CD, consider using Groq (cloud).
 
 ### Does Codexa work with monorepos?
 Yes! Adjust `includeGlobs` and `excludeGlobs` to target specific packages or workspaces.

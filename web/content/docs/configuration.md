@@ -30,38 +30,22 @@ export OPENAI_API_KEY="sk-your_key_here"  # If using OpenAI embeddings
 
 ### `modelProvider`
 
-**Type:** `"local" | "groq"`
-**Default:** `"groq"` (recommended)
+**Type:** `"groq"`
+**Default:** `"groq"`
 
 The LLM provider to use for generating answers.
 
-- `"groq"` - Uses Groq's cloud API (recommended, requires `GROQ_API_KEY`)
-- `"local"` - Uses Ollama running on your machine (alternative option)
+- `"groq"` - Uses Groq's cloud API (requires `GROQ_API_KEY`)
 
 ### `model`
 
 **Type:** `string`
-**Default:** `"llama-3.1-8b-instant"` (groq, recommended) or `"qwen2.5:3b-instruct"` (local)
+**Type:** `string`
+**Default:** `"llama-3.1-8b-instant"`
 
 The model identifier to use.
 
-**Common Groq Models (Recommended):**
-- `llama-3.1-8b-instant` - Fast responses (default, recommended)
-- `llama-3.1-70b-versatile` - Higher quality, slower
 
-**Common Local Models (Alternative):**
-- `qwen2.5:3b-instruct` - Fast, lightweight - **3B parameters**
-- `qwen2.5:1.5b-instruct` - Even faster, smaller - **1.5B parameters**
-- `phi3:mini` - Microsoft Phi-3 Mini - **3.8B parameters**
-
-> ⚠️ **Warning:** Models with more than 3 billion parameters (like `llama3:8b`, `mistral:7b`) may not work reliably with local Ollama setup. If you encounter issues, please try using a 3B parameter model instead, or switch to Groq.
-
-### `localModelUrl`
-
-**Type:** `string`
-**Default:** `"http://localhost:11434"`
-
-Base URL for your local Ollama instance. Change this if Ollama runs on a different host or port.
 
 ### `embeddingProvider`
 
@@ -165,7 +149,7 @@ Number of code chunks to retrieve and use as context for each question. Higher v
 
 ## Example Configurations
 
-### Groq Cloud Provider (Recommended - Default)
+### Groq Cloud Provider (Default)
 
 ```json
 {
@@ -185,28 +169,14 @@ Number of code chunks to retrieve and use as context for each question. Higher v
 export GROQ_API_KEY="your-api-key"
 ```
 
-### Local Development (Alternative)
 
-```json
-{
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
-  "localModelUrl": "http://localhost:11434",
-  "embeddingProvider": "local",
-  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
-  "maxChunkSize": 200,
-  "chunkOverlap": 20,
-  "temperature": 0.2,
-  "topK": 4
-}
-```
 
 ### Optimized for Large Codebases
 
 ```json
 {
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
+  "modelProvider": "groq",
+  "model": "llama-3.1-8b-instant",
   "maxChunkSize": 150,
   "chunkOverlap": 15,
   "topK": 6,

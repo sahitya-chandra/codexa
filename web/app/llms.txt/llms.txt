@@ -6,7 +6,7 @@ Codexa is a powerful CLI tool that ingests your codebase and allows you to ask q
 
 - **Privacy-First**: All data processing happens locally by default.
 - **Fast & Efficient**: Local embeddings and optimized vector search.
-- **Multiple LLM Support**: Works with Ollama (local) and Groq (cloud).
+- **Multiple LLM Support**: Works with Groq (cloud).
 - **Local Storage**: SQLite database for embeddings and context.
 - **Smart Chunking**: Intelligent code splitting with configurable overlap.
 - **Session Management**: Maintain conversation context across queries.
@@ -53,10 +53,9 @@ Codexa uses a `.codexarc.json` file in your project root.
 
 ### LLM Setup
 
-- **Groq (Cloud - Recommended)**: Set `GROQ_API_KEY` environment variable.
-- **Ollama (Local)**: Install Ollama and pull a model (e.g., `qwen2.5:3b-instruct`).
+- **Groq (Cloud)**: Set `GROQ_API_KEY` environment variable.
 
-### Example Configuration (Groq)
+### Example Configuration
 
 ```json
 {

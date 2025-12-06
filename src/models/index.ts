@@ -140,18 +140,24 @@ class GroqLLM implements LLMClient {
 }
 
 export function createLLMClient(config: AgentConfig): LLMClient {
-  if (config.modelProvider === 'local') {
-    const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
-    if (process.env.AGENT_DEBUG) {
-      console.error('Using Ollama client:', config.model, config.localModelUrl);
-    }
+  // if (config.modelProvider === 'local') {
+  //   const base = config.localModelUrl?.replace(/\/$/, '') || 'http://localhost:11434';
+  //   if (process.env.AGENT_DEBUG) {
+  //     console.error('Using Ollama client:', config.model, config.localModelUrl);
+  //   }
 
-    return new OllamaLLM(config.model, base);
-  }
+  //   return new OllamaLLM(config.model, base);
+  // }
 
   if (config.modelProvider === 'groq') {
     if (process.env.AGENT_DEBUG) {
       console.error('Using Groq client:', config.model);
+    }
+
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error(
+        'GROQ_API_KEY is not set. Please set the GROQ_API_KEY environment variable to use Groq models.',
+      );
     }
 
     return new GroqLLM(config.model, process.env.GROQ_API_KEY);

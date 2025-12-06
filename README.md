@@ -48,7 +48,7 @@
 
 - 🔒 **Privacy-First**: All data processing happens locally by default
 - ⚡ **Fast & Efficient**: Local embeddings and optimized vector search
-- 🤖 **Multiple LLM Support**: Works with Ollama (local) and Groq (cloud)
+- 🤖 **Multiple LLM Support**: Works with Groq (cloud)
 - 💾 **Local Storage**: SQLite database for embeddings and context
 - 🎯 **Smart Chunking**: Intelligent code splitting with configurable overlap
 - 🔄 **Session Management**: Maintain conversation context across queries
@@ -68,7 +68,6 @@ Before installing Codexa, ensure you have the following:
   node --version  # Should be v20.0.0 or higher
   ```
 
-- **For Local LLM (Ollama)**: [Ollama](https://ollama.com/) must be installed
 - **For Cloud LLM (Groq)**: A Groq API key from [console.groq.com](https://console.groq.com/)
 
 ### Installation Methods
@@ -130,11 +129,9 @@ codexa --version
 
 ### LLM Setup
 
-Codexa requires an LLM to generate answers. You can use either Groq (cloud - recommended) or Ollama (local). Groq is recommended for its speed and reliability.
+Codexa requires an LLM to generate answers. You can use Groq (cloud).
 
-#### Option 1: Using Groq (Cloud - Recommended)
-
-Groq provides fast cloud-based LLMs with a generous free tier and is the recommended option for most users.
+Groq provides fast cloud-based LLMs with a generous free tier.
 
 **Step 1: Get a Groq API Key**
 
@@ -192,69 +189,11 @@ Codexa defaults to using Groq when you run `codexa init`. If you need to manuall
 - `llama-3.1-8b-instant` - Fast responses (recommended, default)
 - `llama-3.1-70b-versatile` - Higher quality, slower
 
-#### Option 2: Using Ollama (Local - Alternative)
 
-Ollama runs LLMs locally on your machine, keeping your code completely private. This is an alternative option if you prefer local processing.
-
-> ⚠️ **Note:** Models with more than 3 billion parameters may not work reliably with local Ollama setup. We recommend using 3B parameter models for best compatibility, or use Groq (Option 1) for better reliability.
-
-**Step 1: Install Ollama**
-
-- **macOS/Linux**: Visit [ollama.com](https://ollama.com/) and follow the installation instructions
-- **Or use Homebrew on macOS**:
-  ```bash
-  brew install ollama
-  ```
-
-**Step 2: Start Ollama Service**
-
-```bash
-# Start Ollama (usually starts automatically after installation)
-ollama serve
-
-# Verify Ollama is running
-curl http://localhost:11434/api/tags
-```
-
-**Step 3: Download a Model**
-
-Pull a model that Codexa can use:
-
-```bash
-# Recommended: Fast and lightweight - 3B parameters
-ollama pull qwen2.5:3b-instruct
-
-# Alternative 3B options:
-ollama pull qwen2.5:1.5b-instruct    # Even faster, smaller
-ollama pull phi3:mini                # Microsoft Phi-3 Mini
-
-# ⚠️ Note: Larger models (8B+ like llama3:8b, mistral:7b) may not work locally
-# If you encounter issues, try using a 3B model instead, or switch to Groq
-```
-
-**Step 4: Verify Model is Available**
-
-```bash
-ollama list
-```
-
-You should see your downloaded model in the list.
-
-**Step 5: Configure Codexa**
-
-Edit `.codexarc.json` after running `codexa init`:
-
-```json
-{
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
-  "localModelUrl": "http://localhost:11434"
-}
-```
 
 #### Quick Setup Summary
 
-**For Groq (Recommended):**
+**For Groq:**
 ```bash
 # 1. Get API key from console.groq.com
 # 2. Set environment variable
@@ -266,22 +205,7 @@ codexa init
 # 4. Ready to use!
 ```
 
-**For Ollama (Alternative):**
-```bash
-# 1. Install Ollama
-brew install ollama  # macOS
-# or visit ollama.com for other platforms
 
-# 2. Start Ollama
-ollama serve
-
-# 3. Pull model (use 3B models only)
-ollama pull qwen2.5:3b-instruct
-
-# 4. Update .codexarc.json to set "modelProvider": "local"
-codexa init
-# Then edit .codexarc.json to set modelProvider to "local"
-```
 
 ## Quick Start
 
@@ -427,38 +351,22 @@ export OPENAI_API_KEY="sk-your_key_here"  # If using OpenAI embeddings
 
 #### `modelProvider`
 
-**Type:** `"local" | "groq"`  
-**Default:** `"groq"` (recommended)
+**Type:** `"groq"`  
+**Default:** `"groq"`
 
 The LLM provider to use for generating answers.
 
-- `"groq"` - Uses Groq's cloud API (recommended, requires `GROQ_API_KEY`)
-- `"local"` - Uses Ollama running on your machine (alternative option)
+- `"groq"` - Uses Groq's cloud API (requires `GROQ_API_KEY`)
 
 #### `model`
 
 **Type:** `string`  
-**Default:** `"llama-3.1-8b-instant"` (groq, recommended) or `"qwen2.5:3b-instruct"` (local)
+**Type:** `string`  
+**Default:** `"llama-3.1-8b-instant"`
 
 The model identifier to use.
 
-**Common Groq Models (Recommended):**
-- `llama-3.1-8b-instant` - Fast responses (default, recommended)
-- `llama-3.1-70b-versatile` - Higher quality, slower
 
-**Common Local Models (Alternative):**
-- `qwen2.5:3b-instruct` - Fast, lightweight - **3B parameters**
-- `qwen2.5:1.5b-instruct` - Even faster, smaller - **1.5B parameters**
-- `phi3:mini` - Microsoft Phi-3 Mini - **3.8B parameters**
-
-> ⚠️ **Warning:** Models with more than 3 billion parameters (like `llama3:8b`, `mistral:7b`) may not work reliably with local Ollama setup. If you encounter issues, please try using a 3B parameter model instead, or switch to Groq.
-
-#### `localModelUrl`
-
-**Type:** `string`  
-**Default:** `"http://localhost:11434"`
-
-Base URL for your local Ollama instance. Change this if Ollama runs on a different host or port.
 
 #### `embeddingProvider`
 
@@ -562,7 +470,7 @@ Number of code chunks to retrieve and use as context for each question. Higher v
 
 ### Example Configurations
 
-#### Groq Cloud Provider (Recommended - Default)
+#### Groq Cloud Provider (Default)
 
 ```json
 {
@@ -582,28 +490,14 @@ Number of code chunks to retrieve and use as context for each question. Higher v
 export GROQ_API_KEY="your-api-key"
 ```
 
-#### Local Development (Alternative)
 
-```json
-{
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
-  "localModelUrl": "http://localhost:11434",
-  "embeddingProvider": "local",
-  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
-  "maxChunkSize": 200,
-  "chunkOverlap": 20,
-  "temperature": 0.2,
-  "topK": 4
-}
-```
 
 #### Optimized for Large Codebases
 
 ```json
 {
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
+  "modelProvider": "groq",
+  "model": "llama-3.1-8b-instant",
   "maxChunkSize": 150,
   "chunkOverlap": 15,
   "topK": 6,
@@ -731,8 +625,8 @@ When you run `codexa ask`:
                                ▼
 ┌─────────────────┐     ┌──────────────┐
 │   SQLite DB     │◀────│   LLM        │
-│   (Chunks +     │     │   (Ollama/   │
-│   Embeddings)   │     │    Groq)     │
+│   (Chunks +     │     │   (Groq)     │
+│   Embeddings)   │     │              │
 └─────────────────┘     └──────┬───────┘
                                │
                                ▼
@@ -745,50 +639,12 @@ When you run `codexa ask`:
 - **Chunker**: Splits code files into semantic chunks
 - **Embedder**: Generates vector embeddings (local transformers)
 - **Retriever**: Finds relevant chunks using vector similarity
-- **LLM Client**: Generates answers (Ollama local or Groq cloud)
+- **LLM Client**: Generates answers (Groq cloud)
 - **Database**: SQLite for storing chunks and embeddings
 
 ## Troubleshooting
 
-### "Ollama not reachable" Error
 
-**Problem:** Codexa can't connect to your local Ollama instance.
-
-**Solutions:**
-1. Ensure Ollama is running:
-   ```bash
-   ollama serve
-   ```
-2. Check if Ollama is running on the default port:
-   ```bash
-   curl http://localhost:11434/api/tags
-   ```
-3. If Ollama runs on a different host/port, update `.codexarc.json`:
-   ```json
-   {
-     "localModelUrl": "http://your-host:port"
-   }
-   ```
-
-### "Model not found" Error
-
-**Problem:** The specified Ollama model isn't available.
-
-**Solutions:**
-1. List available models:
-   ```bash
-   ollama list
-   ```
-2. Pull the required model:
-   ```bash
-   ollama pull qwen2.5:3b-instruct
-   ```
-3. Or update `.codexarc.json` to use an available model:
-   ```json
-   {
-     "model": "your-available-model"
-   }
-   ```
 
 ### "GROQ_API_KEY not set" Error
 
@@ -836,7 +692,7 @@ When you run `codexa ask`:
    ```bash
    codexa ingest --force
    ```
-4. If using local Ollama, try a 3B parameter model (models larger than 3B may not work reliably locally)
+
 5. Ask more specific questions
 
 ### Database Locked Error
@@ -869,7 +725,7 @@ A: Yes! Codexa processes everything locally by default. Your code never leaves y
 A: Typically 10-50MB per 1000 files, depending on file sizes. The SQLite database stores chunks and embeddings.
 
 **Q: Can I use Codexa in CI/CD?**  
-A: Yes, but you'll need to ensure Ollama or your LLM provider is accessible. For CI/CD, consider using Groq (cloud) instead of local Ollama.
+A: Yes, but you'll need to ensure your LLM provider is accessible. For CI/CD, consider using Groq (cloud).
 
 **Q: Does Codexa work with monorepos?**  
 A: Yes! Adjust `includeGlobs` and `excludeGlobs` to target specific packages or workspaces.

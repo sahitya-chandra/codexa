@@ -7,7 +7,7 @@ description: Codexa is a powerful CLI tool that ingests your codebase and allows
 
 - 🔒 **Privacy-First**: All data processing happens locally by default
 - ⚡ **Fast & Efficient**: Local embeddings and optimized vector search
-- 🤖 **Multiple LLM Support**: Works with Ollama (local) and Groq (cloud)
+- 🤖 **Multiple LLM Support**: Works with Groq (cloud)
 - 💾 **Local Storage**: SQLite database for embeddings and context
 - 🎯 **Smart Chunking**: Intelligent code splitting with configurable overlap
 - 🔄 **Session Management**: Maintain conversation context across queries
@@ -68,10 +68,9 @@ When you run `codexa ask`:
                                ▼
 ┌─────────────────┐     ┌──────────────┐
 │   SQLite DB     │◀────│   LLM        │
-│   (Chunks +     │     │   (Ollama/   │
-│   Embeddings)   │     │    Groq)     │
-└─────────────────┘     └──────┬───────┘
-                               │
+│   (Chunks +     │     │   (Groq)     │
+│   Embeddings)   │     └──────┬───────┘
+└─────────────────┘            │
                                ▼
                         ┌──────────────┐
                         │   Answer     │
@@ -82,5 +81,5 @@ When you run `codexa ask`:
 - **Chunker**: Splits code files into semantic chunks
 - **Embedder**: Generates vector embeddings (local transformers)
 - **Retriever**: Finds relevant chunks using vector similarity
-- **LLM Client**: Generates answers (Ollama local or Groq cloud)
+- **LLM Client**: Generates answers (Groq cloud)
 - **Database**: SQLite for storing chunks and embeddings

@@ -12,7 +12,6 @@ Before installing Codexa, ensure you have the following:
   node --version  # Should be v20.0.0 or higher
   ```
 
-- **For Local LLM (Ollama)**: [Ollama](https://ollama.com/) must be installed
 - **For Cloud LLM (Groq)**: A Groq API key from [console.groq.com](https://console.groq.com/)
 
 ## Installation Methods
@@ -68,9 +67,9 @@ codexa --version
 
 ## LLM Setup
 
-Codexa requires an LLM to generate answers. You can use either Groq (cloud - recommended) or Ollama (local). Groq is recommended for its speed and reliability.
+Codexa requires an LLM to generate answers. You can use Groq (cloud).
 
-### Option 1: Using Groq (Cloud - Recommended)
+### Option 1: Using Groq (Cloud)
 
 Groq provides fast cloud-based LLMs with a generous free tier and is the recommended option for most users.
 
@@ -126,62 +125,4 @@ Codexa defaults to using Groq when you run `codexa init`. If you need to manuall
 }
 ```
 
-### Option 2: Using Ollama (Local - Alternative)
 
-Ollama runs LLMs locally on your machine, keeping your code completely private. This is an alternative option if you prefer local processing.
-
-> ⚠️ **Note:** Models with more than 3 billion parameters may not work reliably with local Ollama setup. We recommend using 3B parameter models for best compatibility, or use Groq (Option 1) for better reliability.
-
-**Step 1: Install Ollama**
-
-- **macOS/Linux**: Visit [ollama.com](https://ollama.com/) and follow the installation instructions
-- **Or use Homebrew on macOS**:
-  ```bash
-  brew install ollama
-  ```
-
-**Step 2: Start Ollama Service**
-
-```bash
-# Start Ollama (usually starts automatically after installation)
-ollama serve
-
-# Verify Ollama is running
-curl http://localhost:11434/api/tags
-```
-
-**Step 3: Download a Model**
-
-Pull a model that Codexa can use:
-
-```bash
-# Recommended: Fast and lightweight - 3B parameters
-ollama pull qwen2.5:3b-instruct
-
-# Alternative 3B options:
-ollama pull qwen2.5:1.5b-instruct    # Even faster, smaller
-ollama pull phi3:mini                # Microsoft Phi-3 Mini
-
-# ⚠️ Note: Larger models (8B+ like llama3:8b, mistral:7b) may not work locally
-# If you encounter issues, try using a 3B model instead, or switch to Groq
-```
-
-**Step 4: Verify Model is Available**
-
-```bash
-ollama list
-```
-
-You should see your downloaded model in the list.
-
-**Step 5: Configure Codexa**
-
-Edit `.codexarc.json` after running `codexa init`:
-
-```json
-{
-  "modelProvider": "local",
-  "model": "qwen2.5:3b-instruct",
-  "localModelUrl": "http://localhost:11434"
-}
-```

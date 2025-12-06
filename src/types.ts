@@ -1,4 +1,4 @@
-export type ModelProvider = 'groq' | 'local';
+export type ModelProvider = 'groq';
 export type EmbeddingProvider = 'local';
 
 export interface AgentConfig {

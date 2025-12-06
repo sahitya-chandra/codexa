@@ -12,8 +12,8 @@ const DEFAULT_CONFIG: AgentConfig = {
   model: 'llama-3.1-8b-instant', // can also use llama-3.3-70b-versatile for better perf
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
-  localModelUrl: 'http://localhost:11434',
-  localModelApiKey: '',
+  // localModelUrl: 'http://localhost:11434',
+  // localModelApiKey: '',
   maxChunkSize: 800,
   chunkOverlap: 100,
   includeGlobs: [
