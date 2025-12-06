@@ -1,6 +1,6 @@
 {
   "name": "codexa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI agent that indexes local repos and answers questions with hosted or local LLMs.",
   "bin": {
     "codexa": "bin/codexa.js"
@@ -29,7 +29,7 @@
     "type": "git",
     "url": "git+https://github.com/sahitya-chandra/codexa.git"
   },
-  "homepage": "https://github.com/sahitya-chandra/codexa#readme",
+  "homepage": "codexa-neon.vercel.app",
   "bugs": {
     "url": "https://github.com/sahitya-chandra/codexa/issues"
   },
