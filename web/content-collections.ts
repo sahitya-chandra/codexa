@@ -25,6 +25,7 @@ const docs = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    content: z.string(), // Explicit content property
   }),
   transform: async (doc, { cache }) => {
     const filePath = doc._meta.filePath.replace(/\.mdx?$/, "");
