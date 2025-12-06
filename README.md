@@ -1,14 +1,7 @@
 <div align="center">
-  <table>
-    <tr>
-      <td>
-        <img src="https://github.com/sahitya-chandra/codexa/blob/main/.github/assets/logo.png" alt="Codexa Logo" width="60">
-      </td>
-      <td>
-        <h1>Codexa</h1>
-      </td>
-    </tr>
-  </table>
+  <h1>
+    <img src="https://github.com/sahitya-chandra/codexa/blob/main/.github/assets/logo.png" alt="Codexa Logo" width="90" align="absmiddle"> Codexa
+  </h1>
   
   <p>
     <strong>A powerful CLI tool that ingests your codebase and allows you to ask questions about it using Retrieval-Augmented Generation (RAG).</strong>
