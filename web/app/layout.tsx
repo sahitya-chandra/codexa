@@ -1,4 +1,5 @@
 import "~/styles/globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 import { callingCode, geistMono, geistSans } from "~/styles/fonts";
 
@@ -62,6 +63,7 @@ export default function RootLayout({
         )}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
