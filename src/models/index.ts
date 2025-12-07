@@ -11,6 +11,7 @@ export interface LLMClient {
   ): Promise<string>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class OllamaLLM implements LLMClient {
   constructor(
     private model: string,

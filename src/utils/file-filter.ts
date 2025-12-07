@@ -142,11 +142,7 @@ export async function shouldIncludeFile(
   filePath: string,
   options: FileFilterOptions = {},
 ): Promise<FileFilterResult> {
-  const {
-    maxFileSize = DEFAULT_MAX_FILE_SIZE,
-    skipBinary = true,
-    skipLargeFiles = true,
-  } = options;
+  const { maxFileSize = DEFAULT_MAX_FILE_SIZE, skipBinary = true, skipLargeFiles = true } = options;
 
   // Check file size first (fastest check)
   if (skipLargeFiles) {
@@ -205,4 +201,3 @@ export async function filterFiles(
 
   return { included, excluded };
 }
-

@@ -401,4 +401,3 @@ export function generateConfig(
 
   return config;
 }
-

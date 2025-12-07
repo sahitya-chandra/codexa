@@ -46,7 +46,7 @@
 
     console.log(message);
     console.log('\n');
-  } catch (error) {
+  } catch {
     // Fallback if modules aren't available (shouldn't happen, but just in case)
     console.log('\n🎉 Codexa installed successfully!\n');
     console.log('Quick Start:');
@@ -56,4 +56,3 @@
     console.log('4. Ask questions: codexa ask "your question"\n');
   }
 })();
-

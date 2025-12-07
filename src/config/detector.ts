@@ -38,7 +38,14 @@ const LANGUAGE_DEFINITIONS: LanguageDefinition[] = [
     extensions: ['.py', '.pyw', '.pyi'],
     packageManagers: ['pip', 'poetry', 'pipenv', 'conda'],
     frameworks: ['django', 'flask', 'fastapi', 'pytest'],
-    configFiles: ['requirements.txt', 'setup.py', 'pyproject.toml', 'Pipfile', 'poetry.lock', 'manage.py'],
+    configFiles: [
+      'requirements.txt',
+      'setup.py',
+      'pyproject.toml',
+      'Pipfile',
+      'poetry.lock',
+      'manage.py',
+    ],
   },
   {
     name: 'go',
@@ -191,7 +198,6 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
     });
 
     const extensionMap = new Map<string, number>();
-    let totalSize = 0;
     const LARGE_FILE_THRESHOLD = 5 * 1024 * 1024;
 
     for (const file of allFiles) {
@@ -204,7 +210,6 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
       try {
         const filePath = path.join(cwd, file);
         const stats = await fs.stat(filePath);
-        totalSize += stats.size;
         if (stats.size > LARGE_FILE_THRESHOLD) {
           hasLargeFiles = true;
         }
@@ -329,7 +334,9 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
       }
     }
   } catch (error) {
-    console.warn(`Project analysis warning: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.warn(
+      `Project analysis warning: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    );
   }
 
   return {
@@ -340,4 +347,3 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
     detectedConfigFiles: detectedConfigFiles.sort(),
   };
 }
-
