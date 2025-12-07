@@ -1,6 +1,6 @@
 <div align="center">
   <h1>
-    <img src="https://github.com/user-attachments/assets/8d571bd6-ba2b-469a-8ddc-3f3ded0fd766" alt="Codexa Logo" width="90" align="absmiddle"> Codexa
+    Codexa
   </h1>
   
   <p>
