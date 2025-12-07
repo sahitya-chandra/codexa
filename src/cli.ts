@@ -21,7 +21,7 @@ const program = new Command();
 program
   .name('codexa')
   .description('Ask questions about any local repository from the command line.')
-  .version('1.1.1')
+  .version('1.2.0')
   .action(() => {
     console.log('\n');
     log.box(
