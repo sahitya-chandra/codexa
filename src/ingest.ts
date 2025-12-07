@@ -7,6 +7,7 @@ import { chunkFile } from './chunker';
 import { createEmbedder } from './embeddings';
 import { VectorStore } from './db';
 import { formatStats } from './utils/formatter';
+import { filterFiles } from './utils/file-filter';
 import ora from 'ora';
 
 function compressText(text: string, cap = 800) {
@@ -96,7 +97,7 @@ export async function ingestRepository({
 }) {
   const startedAt = performance.now();
   const spinnerFiles = ora('Finding files...').start();
-  const files = await globby(config.includeGlobs, {
+  const allFiles = await globby(config.includeGlobs, {
     cwd,
     gitignore: true,
     ignore: config.excludeGlobs,
@@ -104,11 +105,31 @@ export async function ingestRepository({
     onlyFiles: true,
   });
 
-  if (!files.length) {
+  if (!allFiles.length) {
     spinnerFiles.fail('No matching files found.');
     return;
   }
-  spinnerFiles.succeed(`Found ${files.length} files`);
+
+  // Filter files: exclude binaries and large files
+  spinnerFiles.text = `Filtering files (found ${allFiles.length})...`;
+  const { included: files, excluded } = await filterFiles(allFiles, {
+    maxFileSize: config.maxFileSize,
+    skipBinary: config.skipBinaryFiles !== false, // default true
+    skipLargeFiles: config.skipLargeFiles !== false, // default true
+  });
+
+  if (excluded.length > 0) {
+    spinnerFiles.warn(
+      `Found ${allFiles.length} files, excluded ${excluded.length} (binaries/large files), processing ${files.length}`,
+    );
+  } else {
+    spinnerFiles.succeed(`Found ${files.length} files`);
+  }
+
+  if (!files.length) {
+    spinnerFiles.fail('No files to process after filtering.');
+    return;
+  }
 
   const spinnerChunk = ora('Chunking files...').start();
   const chunks: FileChunk[] = [];
@@ -126,7 +147,7 @@ export async function ingestRepository({
   chunks.forEach((c) => (c.compressed = compressText(c.content)));
   spinnerCompress.succeed('Compression complete');
 
-  const spinnerEmbed = ora('Preparing embeddings (this will take sometime)...').start();
+  // const spinnerEmbed = ora('Preparing embeddings (this will take sometime)...').start();
   const embedder = await createEmbedder(config);
 
   const progress = new cliProgress.SingleBar(
@@ -150,7 +171,7 @@ export async function ingestRepository({
     await tick();
   }
   progress.stop();
-  spinnerEmbed.succeed('Embedding complete');
+  // spinnerEmbed.succeed('Embedding complete');
 
   const spinnerStore = ora('Storing chunks...').start();
   const store = new VectorStore(config.dbPath);

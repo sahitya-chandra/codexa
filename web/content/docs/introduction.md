@@ -13,6 +13,8 @@ description: Codexa is a powerful CLI tool that ingests your codebase and allows
 - 🔄 **Session Management**: Maintain conversation context across queries
 - 📊 **Streaming Output**: Real-time response streaming for better UX
 - 🎨 **Multiple File Types**: Supports TypeScript, JavaScript, Python, Go, Rust, Java, and more
+- 🧠 **Smart Configuration**: Automatically detects project languages and optimizes config
+- 🛡️ **Intelligent Filtering**: Automatically excludes binaries, large files, and build artifacts
 - ⚙️ **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters
 - 🚀 **Zero Setup**: Works out of the box with sensible defaults
 
@@ -25,9 +27,10 @@ Codexa uses Retrieval-Augmented Generation (RAG) to answer questions about your 
 When you run `codexa ingest`:
 
 1. **File Discovery**: Scans your repository using glob patterns (`includeGlobs`/`excludeGlobs`)
-2. **Code Chunking**: Splits files into manageable chunks with configurable overlap
-3. **Embedding Generation**: Creates vector embeddings for each chunk using local transformers
-4. **Storage**: Stores chunks and embeddings in a SQLite database (`.codexa/index.db`)
+2. **Smart Filtering**: Automatically excludes binaries, large files (>5MB), and build artifacts
+3. **Code Chunking**: Splits files into manageable chunks with configurable overlap
+4. **Embedding Generation**: Creates vector embeddings for each chunk using local transformers
+5. **Storage**: Stores chunks and embeddings in a SQLite database (`.codexa/index.db`)
 
 ### 2. Query Phase
 

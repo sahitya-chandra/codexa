@@ -27,10 +27,13 @@ description: Common questions and troubleshooting for Codexa.
 **Problem:** First ingestion takes too long.
 
 **Solutions:**
-1. Reduce `maxChunkSize` to create more, smaller chunks
-2. Add more patterns to `excludeGlobs` to skip unnecessary files
-3. Be more specific with `includeGlobs` to focus on important files
-4. Use `--force` only when necessary (incremental updates are faster)
+1. The dynamic config should already optimize patterns - check your `.codexarc.json` was generated correctly
+2. Reduce `maxFileSize` to exclude more large files
+3. Reduce `maxChunkSize` to create more, smaller chunks
+4. Add more patterns to `excludeGlobs` to skip unnecessary files
+5. Be more specific with `includeGlobs` to focus on important files
+6. Use `--force` only when necessary (incremental updates are faster)
+7. Ensure `skipBinaryFiles` and `skipLargeFiles` are enabled (default)
 
 ### Poor Quality Answers
 

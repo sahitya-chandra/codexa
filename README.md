@@ -54,6 +54,8 @@
 - 🔄 **Session Management**: Maintain conversation context across queries
 - 📊 **Streaming Output**: Real-time response streaming for better UX
 - 🎨 **Multiple File Types**: Supports TypeScript, JavaScript, Python, Go, Rust, Java, and more
+- 🧠 **Smart Configuration**: Automatically detects project languages and optimizes config
+- 🛡️ **Intelligent Filtering**: Automatically excludes binaries, large files, and build artifacts
 - ⚙️ **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters
 - 🚀 **Zero Setup**: Works out of the box with sensible defaults
 
@@ -239,16 +241,40 @@ Once Codexa is installed and your LLM is configured, you're ready to use it:
 
 ### `init`
 
-Creates a `.codexarc.json` configuration file in the current directory with default settings.
+Creates a `.codexarc.json` configuration file optimized for your codebase.
 
 ```bash
 codexa init
 ```
 
 **What it does:**
-- Creates `.codexarc.json` in the project root
-- Uses sensible defaults for all configuration options
+- **Analyzes your codebase** to detect languages, package managers, and frameworks
+- **Creates optimized config** with language-specific include/exclude patterns
+- **Generates `.codexarc.json`** in the project root with tailored settings
 - Can be safely run multiple times (won't overwrite existing config)
+
+**Detection Capabilities:**
+- **Languages**: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Scala, C/C++, Ruby, PHP, Swift, Dart, and more
+- **Package Managers**: npm, yarn, pnpm, pip, poetry, go, cargo, maven, gradle, sbt, bundler, composer, and more
+- **Frameworks**: Next.js, React, Django, Flask, Rails, Laravel, Spring, Flutter, and more
+
+**Example Output:**
+```
+Analyzing codebase...
+✓ Detected: typescript, javascript (npm, yarn)
+
+✓ Created .codexarc.json with optimized settings for your codebase!
+
+┌ 🚀 Setup Complete ──────────────────────────────────────────┐
+│                                                             │
+│   Next Steps:                                               │
+│                                                             │
+│   1. Review .codexarc.json - Update provider keys if needed │
+│   2. Run: codexa ingest - Start indexing your codebase      │
+│   3. Run: codexa ask "your question" - Ask questions        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -274,9 +300,15 @@ codexa ingest --force
 
 **What it does:**
 1. Scans your repository based on `includeGlobs` and `excludeGlobs` patterns
-2. Chunks files into manageable segments
-3. Generates vector embeddings for each chunk
-4. Stores everything in `.codexa/index.db` (SQLite database)
+2. **Filters files** - Automatically excludes binaries, large files (>5MB), and build artifacts
+3. Chunks files into manageable segments
+4. Generates vector embeddings for each chunk
+5. Stores everything in `.codexa/index.db` (SQLite database)
+
+**Smart Filtering:**
+- Automatically skips binary files (executables, images, archives, etc.)
+- Excludes files larger than the configured size limit (default: 5MB)
+- Filters based on file content analysis (not just extensions)
 
 **Note:** First ingestion may take a few minutes depending on your codebase size. Subsequent ingestions are faster as they only process changed files.
 
@@ -331,6 +363,28 @@ Codexa uses a `.codexarc.json` file in your project root for configuration. This
 **Location:** `.codexarc.json` (project root)
 
 **Format:** JSON
+
+### Dynamic Configuration Generation
+
+When you run `codexa init`, Codexa automatically:
+
+1. **Analyzes your codebase** structure to detect:
+   - Languages present (by file extensions)
+   - Package managers used (by config files)
+   - Frameworks detected (by dependencies and config files)
+
+2. **Generates optimized patterns**:
+   - **Include patterns**: Only file extensions relevant to detected languages
+   - **Exclude patterns**: Language-specific build artifacts, dependency directories, and cache folders
+   - **Smart defaults**: Based on your project type
+
+3. **Applies best practices**:
+   - Excludes common build outputs (`dist/`, `build/`, `target/`, etc.)
+   - Excludes dependency directories (`node_modules/`, `vendor/`, `.venv/`, etc.)
+   - Includes important config files and documentation
+   - Filters binaries and large files automatically
+
+This means your config is tailored to your project from the start, ensuring optimal indexing performance!
 
 ### Environment Variables
 
@@ -467,6 +521,49 @@ Controls randomness in LLM responses (0.0 = deterministic, 1.0 = creative).
 **Default:** `4`
 
 Number of code chunks to retrieve and use as context for each question. Higher values provide more context but may include less relevant information.
+
+#### `maxFileSize`
+
+**Type:** `number`  
+**Default:** `5242880` (5MB)
+
+Maximum file size in bytes. Files larger than this will be excluded from indexing. Helps avoid processing large binary files or generated artifacts.
+
+**Example:**
+```json
+{
+  "maxFileSize": 10485760  // 10MB
+}
+```
+
+#### `skipBinaryFiles`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Whether to automatically skip binary files during indexing. Binary detection uses both file extension and content analysis.
+
+**Example:**
+```json
+{
+  "skipBinaryFiles": true
+}
+```
+
+#### `skipLargeFiles`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if you want to include all files regardless of size.
+
+**Example:**
+```json
+{
+  "skipLargeFiles": true,
+  "maxFileSize": 10485760  // 10MB
+}
+```
 
 ### Example Configurations
 
@@ -666,10 +763,13 @@ When you run `codexa ask`:
 **Problem:** First ingestion takes too long.
 
 **Solutions:**
-1. Reduce `maxChunkSize` to create more, smaller chunks
-2. Add more patterns to `excludeGlobs` to skip unnecessary files
-3. Be more specific with `includeGlobs` to focus on important files
-4. Use `--force` only when necessary (incremental updates are faster)
+1. The dynamic config should already optimize patterns - check your `.codexarc.json` was generated correctly
+2. Reduce `maxFileSize` to exclude more large files
+3. Reduce `maxChunkSize` to create more, smaller chunks
+4. Add more patterns to `excludeGlobs` to skip unnecessary files
+5. Be more specific with `includeGlobs` to focus on important files
+6. Use `--force` only when necessary (incremental updates are faster)
+7. Ensure `skipBinaryFiles` and `skipLargeFiles` are enabled (default)
 
 ### Poor Quality Answers
 

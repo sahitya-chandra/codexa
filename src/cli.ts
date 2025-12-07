@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import ora from 'ora';
+import chalk from 'chalk';
 import { ensureConfig, loadConfig } from './config';
 import { ingestRepository } from './ingest';
 import { askQuestion } from './agent';
@@ -20,7 +21,24 @@ const program = new Command();
 program
   .name('codexa')
   .description('Ask questions about any local repository from the command line.')
-  .version('0.1.0');
+  .version('1.0.1')
+  .action(() => {
+    console.log('\n');
+    log.box(
+      `${chalk.bold('Welcome to Codexa!')}\n\n` +
+        `${chalk.dim('Codexa is a CLI tool that helps you understand your codebase using AI.')}\n\n` +
+        `${chalk.bold('Getting Started:')}\n\n` +
+        `${chalk.dim('1.')} ${chalk.white('Initialize Codexa in your project:')}\n` +
+        `   ${chalk.cyan('codexa init')}\n\n` +
+        `${chalk.dim('2.')} ${chalk.white('Index your codebase:')}\n` +
+        `   ${chalk.cyan('codexa ingest')}\n\n` +
+        `${chalk.dim('3.')} ${chalk.white('Ask questions:')}\n` +
+        `   ${chalk.cyan('codexa ask "your question"')}\n\n` +
+        `${chalk.dim('For more help, run:')} ${chalk.cyan('codexa --help')}`,
+      '🚀 Codexa',
+    );
+    console.log('\n');
+  });
 
 program
   .command('init')
@@ -28,7 +46,17 @@ program
   .action(async () => {
     const cwd = process.cwd();
     await ensureConfig(cwd);
-    log.success('Created .codexarc.json. Update it with your provider keys if needed.');
+    console.log('\n');
+    log.success('Created .codexarc.json with optimized settings for your codebase!');
+    console.log('\n');
+    log.box(
+      `${chalk.bold('Next Steps:')}\n\n` +
+        `${chalk.dim('1.')} ${chalk.white('Review .codexarc.json')} - Update provider keys if needed\n` +
+        `${chalk.dim('2.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ingest')} ${chalk.dim('- Start indexing your codebase')}\n` +
+        `${chalk.dim('3.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ask "your question"')} ${chalk.dim('- Ask questions about your code')}`,
+      '🚀 Setup Complete',
+    );
+    console.log('\n');
   });
 
 program

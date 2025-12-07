@@ -7,16 +7,22 @@ description: Learn how to use Codexa commands and explore examples.
 
 ### `init`
 
-Creates a `.codexarc.json` configuration file in the current directory with default settings.
+Creates a `.codexarc.json` configuration file optimized for your codebase.
 
 ```bash
 codexa init
 ```
 
 **What it does:**
-- Creates `.codexarc.json` in the project root
-- Uses sensible defaults for all configuration options
+- **Analyzes your codebase** to detect languages, package managers, and frameworks
+- **Creates optimized config** with language-specific include/exclude patterns
+- **Generates `.codexarc.json`** in the project root with tailored settings
 - Can be safely run multiple times (won't overwrite existing config)
+
+**Detection Capabilities:**
+- **Languages**: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Scala, C/C++, Ruby, PHP, Swift, Dart, and more
+- **Package Managers**: npm, yarn, pnpm, pip, poetry, go, cargo, maven, gradle, sbt, bundler, composer, and more
+- **Frameworks**: Next.js, React, Django, Flask, Rails, Laravel, Spring, Flutter, and more
 
 ---
 
@@ -42,9 +48,15 @@ codexa ingest --force
 
 **What it does:**
 1. Scans your repository based on `includeGlobs` and `excludeGlobs` patterns
-2. Chunks files into manageable segments
-3. Generates vector embeddings for each chunk
-4. Stores everything in `.codexa/index.db` (SQLite database)
+2. **Filters files** - Automatically excludes binaries, large files (>5MB), and build artifacts
+3. Chunks files into manageable segments
+4. Generates vector embeddings for each chunk
+5. Stores everything in `.codexa/index.db` (SQLite database)
+
+**Smart Filtering:**
+- Automatically skips binary files (executables, images, archives, etc.)
+- Excludes files larger than the configured size limit (default: 5MB)
+- Filters based on file content analysis (not just extensions)
 
 **Note:** First ingestion may take a few minutes depending on your codebase size. Subsequent ingestions are faster as they only process changed files.
 

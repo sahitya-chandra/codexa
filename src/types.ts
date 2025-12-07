@@ -22,6 +22,9 @@ export interface AgentConfig {
   excludeMarkdownFiles?: boolean;
   codeFileBoost?: number;
   markdownFilePenalty?: number;
+  maxFileSize?: number;
+  skipBinaryFiles?: boolean;
+  skipLargeFiles?: boolean;
 }
 
 export interface FileChunk {

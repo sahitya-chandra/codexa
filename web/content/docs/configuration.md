@@ -11,6 +11,24 @@ Codexa uses a `.codexarc.json` file in your project root for configuration. This
 
 **Format:** JSON
 
+## Dynamic Configuration Generation
+
+When you run `codexa init`, Codexa automatically analyzes your codebase and generates an optimized configuration:
+
+### What Gets Detected
+
+- **Languages**: TypeScript, JavaScript, Python, Go, Rust, Java, Kotlin, Scala, C/C++, Ruby, PHP, Swift, Dart, and more
+- **Package Managers**: npm, yarn, pnpm, pip, poetry, go, cargo, maven, gradle, sbt, bundler, composer, and more
+- **Frameworks**: Next.js, React, Django, Flask, Rails, Laravel, Spring, Flutter, and more
+
+### What Gets Optimized
+
+- **Include Patterns**: Only file extensions relevant to detected languages
+- **Exclude Patterns**: Language-specific build artifacts, dependency directories, and cache folders
+- **Smart Defaults**: File size limits and binary filtering based on best practices
+
+This ensures your config is tailored to your project from the start, providing optimal indexing performance!
+
 ## Environment Variables
 
 Some settings can be configured via environment variables:
@@ -146,6 +164,49 @@ Controls randomness in LLM responses (0.0 = deterministic, 1.0 = creative).
 **Default:** `4`
 
 Number of code chunks to retrieve and use as context for each question. Higher values provide more context but may include less relevant information.
+
+### `maxFileSize`
+
+**Type:** `number`
+**Default:** `5242880` (5MB)
+
+Maximum file size in bytes. Files larger than this will be excluded from indexing. Helps avoid processing large binary files or generated artifacts.
+
+**Example:**
+```json
+{
+  "maxFileSize": 10485760  // 10MB
+}
+```
+
+### `skipBinaryFiles`
+
+**Type:** `boolean`
+**Default:** `true`
+
+Whether to automatically skip binary files during indexing. Binary detection uses both file extension and content analysis.
+
+**Example:**
+```json
+{
+  "skipBinaryFiles": true
+}
+```
+
+### `skipLargeFiles`
+
+**Type:** `boolean`
+**Default:** `true`
+
+Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if you want to include all files regardless of size.
+
+**Example:**
+```json
+{
+  "skipLargeFiles": true,
+  "maxFileSize": 10485760  // 10MB
+}
+```
 
 ## Example Configurations
 

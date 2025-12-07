@@ -1,7 +1,10 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import dotenv from 'dotenv';
+import ora from 'ora';
 import { AgentConfig } from './types';
+import { analyzeProject } from './config/detector';
+import { generateConfig } from './config/generator';
 
 dotenv.config();
 
@@ -39,12 +42,35 @@ const DEFAULT_CONFIG: AgentConfig = {
   dbPath: '.codexa/index.db',
   temperature: 0.2,
   topK: 10,
+  maxFileSize: 5 * 1024 * 1024,
+  skipBinaryFiles: true,
+  skipLargeFiles: true,
 };
+
+/**
+ * Generates a dynamic config by analyzing the codebase
+ */
+async function generateDynamicConfig(cwd: string): Promise<AgentConfig> {
+  const spinner = ora('Analyzing codebase...').start();
+  try {
+    const analysis = await analyzeProject(cwd);
+    spinner.succeed(
+      `Detected: ${analysis.languages.length > 0 ? analysis.languages.join(', ') : 'no languages'} ${analysis.packageManagers.length > 0 ? `(${analysis.packageManagers.join(', ')})` : ''}`,
+    );
+    return generateConfig(analysis);
+  } catch (error) {
+    spinner.warn(
+      `Analysis failed: ${error instanceof Error ? error.message : 'Unknown error'}. Using default config.`,
+    );
+    return DEFAULT_CONFIG;
+  }
+}
 
 export async function ensureConfig(cwd: string): Promise<AgentConfig> {
   const configPath = path.join(cwd, CONFIG_FILENAME);
   if (!(await fs.pathExists(configPath))) {
-    await fs.writeJson(configPath, DEFAULT_CONFIG, { spaces: 2 });
+    const dynamicConfig = await generateDynamicConfig(cwd);
+    await fs.writeJson(configPath, dynamicConfig, { spaces: 2 });
   }
   return loadConfig(cwd);
 }

@@ -10,6 +10,7 @@
     "clean": "rimraf dist",
     "prepare": "npm run build",
     "prepublishOnly": "npm run clean && npm run build",
+    "postinstall": "node scripts/postinstall.js",
     "dev": "tsx src/cli.ts",
     "smoke": "ts-node --transpile-only scripts/smoke.ts",
     "lint": "eslint .",
@@ -36,6 +37,7 @@
   "files": [
     "bin",
     "dist",
+    "scripts",
     "README.md",
     "LICENSE"
   ],

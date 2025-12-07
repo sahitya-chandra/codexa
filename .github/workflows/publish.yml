@@ -1,14 +1,9 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (patch/minor/major)'
-        required: false
-        default: 'patch'
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
@@ -44,9 +39,15 @@ jobs:
       - name: Publish to npm (trusted publishing)
         if: github.event_name == 'release'
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Dry run publish (manual trigger)
         if: github.event_name == 'workflow_dispatch'
         run: npm publish --dry-run
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: "Automated release for version ${{ github.ref_name }}"
+
