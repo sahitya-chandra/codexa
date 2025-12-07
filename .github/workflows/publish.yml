@@ -6,7 +6,6 @@ on:
       - "v*"
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
@@ -14,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +23,9 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -40,8 +41,8 @@ jobs:
           test -f dist/cli.js || exit 1
           test -f bin/codexa.js || exit 1
 
-      - name: Publish to npm (trusted publishing)
-        run: npm publish --provenance --access public
+      - name: Publish to npm
+        run: npm publish --access public
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
