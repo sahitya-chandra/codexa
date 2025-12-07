@@ -37,12 +37,7 @@ jobs:
           test -f bin/codexa.js || exit 1
 
       - name: Publish to npm (trusted publishing)
-        if: github.event_name == 'release'
         run: npm publish --provenance --access public
-
-      - name: Dry run publish (manual trigger)
-        if: github.event_name == 'workflow_dispatch'
-        run: npm publish --dry-run
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
