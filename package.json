@@ -1,6 +1,6 @@
 {
   "name": "codexa",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CLI agent that indexes local repos and answers questions with hosted or local LLMs.",
   "bin": {
     "codexa": "bin/codexa.js"

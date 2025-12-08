@@ -9,9 +9,10 @@ Codexa is a powerful CLI tool that ingests your codebase and allows you to ask q
 - **Multiple LLM Support**: Works with Groq (cloud).
 - **Local Storage**: SQLite database for embeddings and context.
 - **Smart Chunking**: Intelligent code splitting with configurable overlap.
-- **Session Management**: Maintain conversation context across queries.
 - **Streaming Output**: Real-time response streaming for better UX.
 - **Multiple File Types**: Supports TypeScript, JavaScript, Python, Go, Rust, Java, and more.
+- **Smart Configuration**: Automatically detects project languages and optimizes config
+- **Intelligent Filtering**: Automatically excludes binaries, large files, and build artifacts
 - **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters.
 - **Zero Setup**: Works out of the box with sensible defaults.
 
@@ -37,12 +38,17 @@ brew install codexa
    codexa init
    ```
 
-2. **Ingest your codebase:**
+2. **Set GROQ API Key**
+   ```bash
+   codexa config set GROQ_API_KEY "gsk_your_key"
+   ```
+
+3. **Ingest your codebase:**
    ```bash
    codexa ingest
    ```
 
-3. **Ask questions:**
+4. **Ask questions:**
    ```bash
    codexa ask "How does the authentication flow work?"
    ```
@@ -69,6 +75,7 @@ Codexa uses a `.codexarc.json` file in your project root.
 ## Commands
 
 - `codexa init`: Create configuration file.
+- `codexa config`: Manage configuration values, including API keys.
 - `codexa ingest`: Index codebase.
 - `codexa ask <question>`: Ask questions about the codebase.
 

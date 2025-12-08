@@ -141,7 +141,9 @@ export async function ingestRepository({
       chunks.push(...ch);
     } catch (error) {
       spinnerChunk.clear();
-      console.warn(`\nFailed to chunk file ${file}: ${error instanceof Error ? error.message : String(error)}`);
+      console.warn(
+        `\nFailed to chunk file ${file}: ${error instanceof Error ? error.message : String(error)}`,
+      );
       spinnerChunk.render();
     }
 

@@ -43,7 +43,8 @@ function showBanner() {
         `${chalk.bold('Quick Start:')}\n\n` +
         `${chalk.dim('1.')} ${chalk.white('Navigate to your project directory')}\n` +
         `${chalk.dim('2.')} ${chalk.white('Initialize Codexa:')} ${chalk.cyan('codexa init')}\n` +
-        `${chalk.dim('3.')} ${chalk.white('Set your GROQ API Key:')} ` + `${getAPIKeyStep()}\n` +
+        `${chalk.dim('3.')} ${chalk.white('Set your GROQ API Key:')} ` +
+        `${getAPIKeyStep()}\n` +
         `${chalk.dim('4.')} ${chalk.white('Index your codebase:')} ${chalk.cyan('codexa ingest')}\n` +
         `${chalk.dim('5.')} ${chalk.white('Ask questions:')} ${chalk.cyan('codexa ask "your question"')}\n\n` +
         `${chalk.dim('For help, run:')} ${chalk.cyan('codexa --help')}\n` +
@@ -77,7 +78,7 @@ const program = new Command();
 program
   .name('codexa')
   .description('Ask questions about any local repository from the command line.')
-  .version('1.2.0')
+  .version('1.2.1')
   .action(() => {
     showBanner();
   });
@@ -94,7 +95,8 @@ program
     log.box(
       `${chalk.bold('Next Steps:')}\n\n` +
         `${chalk.dim('1.')} ${chalk.white('Review .codexarc.json')} - Update provider keys if needed\n` +
-        `${chalk.dim('2.')} ${chalk.white('Set your GROQ API Key:')} ` + `${getAPIKeyStep()}\n` +
+        `${chalk.dim('2.')} ${chalk.white('Set your GROQ API Key:')} ` +
+        `${getAPIKeyStep()}\n` +
         `${chalk.dim('3.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ingest')} ${chalk.dim('- Start indexing your codebase')}\n` +
         `${chalk.dim('4.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ask "your question"')} ${chalk.dim('- Ask questions about your code')}`,
       '🚀 Setup Complete',
@@ -163,7 +165,6 @@ program
       handleError(error);
     }
   });
-
 
 program
   .command('config')

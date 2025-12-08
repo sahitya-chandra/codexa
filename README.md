@@ -51,7 +51,6 @@
 - 🤖 **Multiple LLM Support**: Works with Groq (cloud)
 - 💾 **Local Storage**: SQLite database for embeddings and context
 - 🎯 **Smart Chunking**: Intelligent code splitting with configurable overlap
-- 🔄 **Session Management**: Maintain conversation context across queries
 - 📊 **Streaming Output**: Real-time response streaming for better UX
 - 🎨 **Multiple File Types**: Supports TypeScript, JavaScript, Python, Go, Rust, Java, and more
 - 🧠 **Smart Configuration**: Automatically detects project languages and optimizes config
