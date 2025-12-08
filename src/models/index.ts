@@ -75,8 +75,10 @@ class OllamaLLM implements LLMClient {
             full += token;
             options.onToken?.(token);
           }
-        } catch {
-          // Should not happen with proper buffering, but ignore if it does
+        } catch (e) {
+          if (process.env.AGENT_DEBUG) {
+            console.warn('Failed to parse token:', e);
+          }
         }
       }
     }
@@ -90,8 +92,11 @@ class OllamaLLM implements LLMClient {
           full += token;
           options.onToken?.(token);
         }
-      } catch {
+      } catch (e) {
         // Ignore incomplete final chunk
+        if (process.env.AGENT_DEBUG) {
+          console.warn('Failed to parse final chunk:', e);
+        }
       }
     }
 
@@ -155,13 +160,15 @@ export function createLLMClient(config: AgentConfig): LLMClient {
       console.error('Using Groq client:', config.model);
     }
 
-    if (!process.env.GROQ_API_KEY) {
+    const apiKey = process.env.GROQ_API_KEY || config.groqApiKey;
+
+    if (!apiKey) {
       throw new Error(
-        'GROQ_API_KEY is not set. Please set the GROQ_API_KEY environment variable to use Groq models.',
+        'GROQ_API_KEY is not set. Please set the GROQ_API_KEY environment variable or use `codexa config set GROQ_API_KEY <key>` to set it.',
       );
     }
 
-    return new GroqLLM(config.model, process.env.GROQ_API_KEY);
+    return new GroqLLM(config.model, apiKey);
   }
 
   throw new Error('Only local provider supported for now.');

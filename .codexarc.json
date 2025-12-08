@@ -95,5 +95,6 @@
   "topK": 10,
   "maxFileSize": 5242880,
   "skipBinaryFiles": true,
-  "skipLargeFiles": true
+  "skipLargeFiles": true,
+  "groqApiKey": "test_key_123"
 }

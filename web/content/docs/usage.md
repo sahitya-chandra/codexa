@@ -62,6 +62,30 @@ codexa ingest --force
 
 ---
 
+### `config`
+
+Manage configuration values, including API keys.
+
+```bash
+codexa config <action> [key] [value]
+```
+
+**Actions:**
+- `set <key> <value>` - Set a configuration value
+- `get <key>` - Get a configuration value
+- `list` - List all configuration values
+
+**Examples:**
+```bash
+# Set Groq API Key
+codexa config set GROQ_API_KEY "gsk_..."
+
+# Check current key
+codexa config get GROQ_API_KEY
+```
+
+---
+
 ### `ask`
 
 Ask natural language questions about your codebase.
@@ -74,8 +98,7 @@ codexa ask <question...> [options]
 - `<question...>` - Your question (can be multiple words)
 
 **Options:**
-- `-s, --session <name>` - Session identifier to maintain conversation context (default: `"default"`)
-- `--no-stream` - Disable streaming output (show full response at once)
+- `--stream` - Enable streaming output
 
 **Examples:**
 ```bash
@@ -85,14 +108,8 @@ codexa ask "How does user authentication work?"
 # Question with multiple words
 codexa ask "What is the main entry point of this application?"
 
-# Use a specific session for context
-codexa ask "How does the login function work?" --session my-analysis
-
-# Disable streaming
-codexa ask "Summarize the codebase structure" --no-stream
-
-# Follow-up question in the same session
-codexa ask "Can you explain that in more detail?" --session my-analysis
+# Enable streaming
+codexa ask "Summarize the codebase structure" --stream
 ```
 
 **How it works:**
@@ -111,10 +128,13 @@ codexa ask "Can you explain that in more detail?" --session my-analysis
 cd my-project
 codexa init
 
-# 2. Index your codebase
+# 2. Set Groq Api Key
+codexa config set GROQ_API_KEY <your-groq-key>
+
+# 3. Index your codebase
 codexa ingest
 
-# 3. Ask questions
+# 4. Ask questions
 codexa ask "What is the main purpose of this codebase?"
 codexa ask "How does the user authentication work?"
 codexa ask "Where is the API routing configured?"

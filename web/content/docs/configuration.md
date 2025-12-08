@@ -36,12 +36,14 @@ Some settings can be configured via environment variables:
 | Variable | Description | Required For |
 |----------|-------------|--------------|
 | `GROQ_API_KEY` | Groq API key for cloud LLM | Groq provider |
-| `OPENAI_API_KEY` | OpenAI API key (for embeddings) | OpenAI embeddings |
 
 **Example:**
 ```bash
+# Using config command (Recommended)
+codexa config set GROQ_API_KEY "gsk_your_key_here"
+
+# Or using environment variables
 export GROQ_API_KEY="gsk_your_key_here"
-export OPENAI_API_KEY="sk-your_key_here"  # If using OpenAI embeddings
 ```
 
 ## Configuration Options
@@ -225,9 +227,9 @@ Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if
 }
 ```
 
-**Remember:** Set `GROQ_API_KEY` environment variable:
+**Remember:** Set `GROQ_API_KEY`:
 ```bash
-export GROQ_API_KEY="your-api-key"
+codexa config set GROQ_API_KEY "your-api-key"
 ```
 
 

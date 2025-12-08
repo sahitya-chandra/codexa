@@ -8,6 +8,7 @@ export interface AgentConfig {
   localModelApiKey?: string;
   apiBaseUrl?: string;
   apiKey?: string;
+  groqApiKey?: string;
   embeddingProvider: EmbeddingProvider;
   embeddingModel: string;
   maxChunkSize: number;

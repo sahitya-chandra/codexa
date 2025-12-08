@@ -2,19 +2,75 @@
 import { Command } from 'commander';
 import ora from 'ora';
 import chalk from 'chalk';
-import { ensureConfig, loadConfig } from './config';
+import path from 'node:path';
+import fs from 'fs-extra';
+import { ensureConfig, loadConfig, saveConfig, CONFIG_FILENAME } from './config';
 import { ingestRepository } from './ingest';
 import { askQuestion } from './agent';
 import { log } from './utils/logger';
 import { formatQuestion } from './utils/formatter';
 import { marked } from 'marked';
 import TerminalRenderer from 'marked-terminal';
+import gradient from 'gradient-string';
+import boxen from 'boxen';
 
 marked.setOptions({
   renderer: new TerminalRenderer({
     tab: 2,
   }),
 });
+
+function showBanner() {
+  const asciiArt = `
+    ╔════════════════════════════════════════════════════════╗
+    ║                                                        ║
+    ║     ██████╗ ██████╗ ██████╗ ███████╗██╗  ██╗ █████╗    ║
+    ║    ██╔════╝██╔═══██╗██╔══██╗██╔════╝╚██╗██╔╝██╔══██╗   ║
+    ║    ██║     ██║   ██║██║  ██║█████╗   ╚███╔╝ ███████║   ║
+    ║    ██║     ██║   ██║██║  ██║██╔══╝   ██╔██╗ ██╔══██║   ║
+    ║    ╚██████╗╚██████╔╝██████╔╝███████╗██╔╝ ██╗██║  ██║   ║
+    ║     ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ║
+    ║                                                        ║
+    ╚════════════════════════════════════════════════════════╝
+  `;
+  try {
+    const gradientArt = gradient('cyan', 'blue', 'magenta')(asciiArt);
+    console.log(gradientArt);
+
+    const message = boxen(
+      `${chalk.bold('🎉 Codexa installed successfully!')}\n\n` +
+        `${chalk.dim('Codexa is a CLI tool that helps you understand your codebase using AI.')}\n\n` +
+        `${chalk.bold('Quick Start:')}\n\n` +
+        `${chalk.dim('1.')} ${chalk.white('Navigate to your project directory')}\n` +
+        `${chalk.dim('2.')} ${chalk.white('Initialize Codexa:')} ${chalk.cyan('codexa init')}\n` +
+        `${chalk.dim('3.')} ${chalk.white('Set your GROQ API Key:')} ` + `${getAPIKeyStep()}\n` +
+        `${chalk.dim('4.')} ${chalk.white('Index your codebase:')} ${chalk.cyan('codexa ingest')}\n` +
+        `${chalk.dim('5.')} ${chalk.white('Ask questions:')} ${chalk.cyan('codexa ask "your question"')}\n\n` +
+        `${chalk.dim('For help, run:')} ${chalk.cyan('codexa --help')}\n` +
+        `${chalk.dim('Or visit:')} ${chalk.cyan('https://github.com/sahitya-chandra/codexa')}`,
+      {
+        title: '🚀 Welcome to Codexa',
+        borderColor: 'cyan',
+        padding: 1,
+        margin: 1,
+      },
+    );
+
+    console.log(message);
+  } catch {
+    console.log('\n🎉 Codexa installed successfully!\n');
+    console.log('Quick Start:');
+    console.log('1. Navigate to your project directory');
+    console.log('2. Initialize Codexa: codexa init');
+    console.log('3. Set your GROQ API Key');
+    console.log('4. Index your codebase: codexa ingest');
+    console.log('5. Ask questions: codexa ask "your question"\n');
+  }
+}
+
+function getAPIKeyStep() {
+  return `${chalk.cyan('codexa config set GROQ_API_KEY <your-groq-key>')}`;
+}
 
 const program = new Command();
 
@@ -23,21 +79,7 @@ program
   .description('Ask questions about any local repository from the command line.')
   .version('1.2.0')
   .action(() => {
-    console.log('\n');
-    log.box(
-      `${chalk.bold('Welcome to Codexa!')}\n\n` +
-        `${chalk.dim('Codexa is a CLI tool that helps you understand your codebase using AI.')}\n\n` +
-        `${chalk.bold('Getting Started:')}\n\n` +
-        `${chalk.dim('1.')} ${chalk.white('Initialize Codexa in your project:')}\n` +
-        `   ${chalk.cyan('codexa init')}\n\n` +
-        `${chalk.dim('2.')} ${chalk.white('Index your codebase:')}\n` +
-        `   ${chalk.cyan('codexa ingest')}\n\n` +
-        `${chalk.dim('3.')} ${chalk.white('Ask questions:')}\n` +
-        `   ${chalk.cyan('codexa ask "your question"')}\n\n` +
-        `${chalk.dim('For more help, run:')} ${chalk.cyan('codexa --help')}`,
-      '🚀 Codexa',
-    );
-    console.log('\n');
+    showBanner();
   });
 
 program
@@ -52,8 +94,9 @@ program
     log.box(
       `${chalk.bold('Next Steps:')}\n\n` +
         `${chalk.dim('1.')} ${chalk.white('Review .codexarc.json')} - Update provider keys if needed\n` +
-        `${chalk.dim('2.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ingest')} ${chalk.dim('- Start indexing your codebase')}\n` +
-        `${chalk.dim('3.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ask "your question"')} ${chalk.dim('- Ask questions about your code')}`,
+        `${chalk.dim('2.')} ${chalk.white('Set your GROQ API Key:')} ` + `${getAPIKeyStep()}\n` +
+        `${chalk.dim('3.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ingest')} ${chalk.dim('- Start indexing your codebase')}\n` +
+        `${chalk.dim('4.')} ${chalk.white('Run:')} ${chalk.cyan('codexa ask "your question"')} ${chalk.dim('- Ask questions about your code')}`,
       '🚀 Setup Complete',
     );
     console.log('\n');
@@ -118,6 +161,53 @@ program
     } catch (error) {
       spinner.fail('Question failed.');
       handleError(error);
+    }
+  });
+
+
+program
+  .command('config')
+  .description('Manage configuration values')
+  .argument('[action]', 'Action to perform (set, get, list)')
+  .argument('[key]', 'Configuration key')
+  .argument('[value]', 'Configuration value')
+  .action(async (action, key, value) => {
+    const cwd = process.cwd();
+    const configPath = path.join(cwd, CONFIG_FILENAME);
+
+    if (!(await fs.pathExists(configPath))) {
+      log.error(`Configuration file not found. Please run ${chalk.cyan('codexa init')} first.`);
+      return;
+    }
+
+    const config = await loadConfig(cwd);
+
+    if (action === 'set') {
+      if (!key || !value) {
+        log.error('Usage: codexa config set <key> <value>');
+        return;
+      }
+      if (key === 'GROQ_API_KEY') {
+        config.groqApiKey = value;
+        await saveConfig(cwd, config);
+        log.success(`Updated ${key}`);
+      } else {
+        log.error(`Unknown config key: ${key}`);
+      }
+    } else if (action === 'get') {
+      if (!key) {
+        log.error('Usage: codexa config get <key>');
+        return;
+      }
+      if (key === 'GROQ_API_KEY') {
+        console.log(config.groqApiKey || 'Not set');
+      } else {
+        log.error(`Unknown config key: ${key}`);
+      }
+    } else if (action === 'list') {
+      console.log(config);
+    } else {
+      log.error('Usage: codexa config <set|get|list> [key] [value]');
     }
   });
 

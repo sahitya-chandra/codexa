@@ -87,7 +87,7 @@ npm install -g codexa
 Verify installation:
 
 ```bash
-codexa --version
+codexa
 ```
 
 #### Method 2: Homebrew (macOS)
@@ -143,35 +143,20 @@ Groq provides fast cloud-based LLMs with a generous free tier.
 4. Create a new API key
 5. Copy your API key (starts with `gsk_`)
 
-**Step 2: Set Environment Variable**
+**Step 2: Set GROQ API Key**
 
-**macOS/Linux:**
+Run the following command to securely save your API key:
+
 ```bash
-# Add to your shell profile (~/.zshrc, ~/.bashrc, etc.)
-export GROQ_API_KEY="gsk_your_api_key_here"
-
-# Reload your shell or run:
-source ~/.zshrc  # or ~/.bashrc
+codexa config set GROQ_API_KEY "gsk_your_api_key_here"
 ```
 
-**Windows (PowerShell):**
-```powershell
-$env:GROQ_API_KEY="gsk_your_api_key_here"
-
-# Or add permanently:
-[System.Environment]::SetEnvironmentVariable('GROQ_API_KEY', 'gsk_your_api_key_here', 'User')
-```
-
-**Windows (Command Prompt):**
-```cmd
-setx GROQ_API_KEY "gsk_your_api_key_here"
-```
+This will save the key to your local configuration file (`.codexarc.json`).
 
 **Step 3: Verify API Key is Set**
 
 ```bash
-echo $GROQ_API_KEY  # macOS/Linux
-echo %GROQ_API_KEY% # Windows CMD
+codexa config get GROQ_API_KEY
 ```
 
 **Step 4: Configure Codexa**
@@ -198,13 +183,14 @@ Codexa defaults to using Groq when you run `codexa init`. If you need to manuall
 **For Groq:**
 ```bash
 # 1. Get API key from console.groq.com
-# 2. Set environment variable
-export GROQ_API_KEY="gsk_your_key"
 
-# 3. Run codexa init (defaults to Groq)
+# 2. Run codexa init (defaults to Groq)
 codexa init
 
-# 4. Ready to use!
+# 3. Set GROQ API key
+codexa config set GROQ_API_KEY "gsk_your_key"
+
+# 4. Proceed to igestion
 ```
 
 
@@ -224,13 +210,19 @@ Once Codexa is installed and your LLM is configured, you're ready to use it:
    ```
    This creates a `.codexarc.json` configuration file with sensible defaults.
 
-3. **Ingest your codebase:**
+3. **Set GROQ API Key**
+   ```bash
+   codexa config set GROQ_API_KEY "gsk_your_key"
+   ```
+   This will save the key to your local configuration file (`.codexarc.json`).
+
+4. **Ingest your codebase:**
    ```bash
    codexa ingest
    ```
    This indexes your codebase and creates embeddings. First run may take a few minutes.
 
-4. **Ask questions:**
+5. **Ask questions:**
    ```bash
    codexa ask "How does the authentication flow work?"
    codexa ask "What is the main entry point of this application?"
@@ -269,9 +261,10 @@ Analyzing codebase...
 │                                                             │
 │   Next Steps:                                               │
 │                                                             │
-│   1. Review .codexarc.json - Update provider keys if needed │
-│   2. Run: codexa ingest - Start indexing your codebase      │
-│   3. Run: codexa ask "your question" - Ask questions        │
+│   1. Review .codexarc.json - Update provider keys if needed |
+│   2. Set your GROQ API Key: codexa config set GROQ_API_KEY  |
+│   3. Run: codexa ingest - Start indexing your codebase      │
+│   4. Run: codexa ask "your question" - Ask questions        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -314,6 +307,30 @@ codexa ingest --force
 
 ---
 
+### `config`
+
+Manage configuration values, including API keys.
+
+```bash
+codexa config <action> [key] [value]
+```
+
+**Actions:**
+- `set <key> <value>` - Set a configuration value
+- `get <key>` - Get a configuration value
+- `list` - List all configuration values
+
+**Examples:**
+```bash
+# Set Groq API Key
+codexa config set GROQ_API_KEY "gsk_..."
+
+# Check current key
+codexa config get GROQ_API_KEY
+```
+
+---
+
 ### `ask`
 
 Ask natural language questions about your codebase.
@@ -326,8 +343,8 @@ codexa ask <question...> [options]
 - `<question...>` - Your question (can be multiple words)
 
 **Options:**
-- `-s, --session <name>` - Session identifier to maintain conversation context (default: `"default"`)
-- `--no-stream` - Disable streaming output (show full response at once)
+<!-- - `-s, --session <name>` - Session identifier to maintain conversation context (default: `"default"`) -->
+- `--stream` - Enable streaming output
 
 **Examples:**
 ```bash
@@ -337,14 +354,8 @@ codexa ask "How does user authentication work?"
 # Question with multiple words
 codexa ask "What is the main entry point of this application?"
 
-# Use a specific session for context
-codexa ask "How does the login function work?" --session my-analysis
-
-# Disable streaming
-codexa ask "Summarize the codebase structure" --no-stream
-
-# Follow-up question in the same session
-codexa ask "Can you explain that in more detail?" --session my-analysis
+# Enable streaming
+codexa ask "Summarize the codebase structure" --stream
 ```
 
 **How it works:**
@@ -393,12 +404,15 @@ Some settings can be configured via environment variables:
 | Variable | Description | Required For |
 |----------|-------------|--------------|
 | `GROQ_API_KEY` | Groq API key for cloud LLM | Groq provider |
-| `OPENAI_API_KEY` | OpenAI API key (for embeddings) | OpenAI embeddings |
+<!-- | `OPENAI_API_KEY` | OpenAI API key (for embeddings) | OpenAI embeddings | -->
 
 **Example:**
 ```bash
-export GROQ_API_KEY="gsk_your_key_here"
-export OPENAI_API_KEY="sk-your_key_here"  # If using OpenAI embeddings
+# Using config command (Recommended)
+codexa config set GROQ_API_KEY "gsk_your_key_here"
+
+# Or using environment variables
+export GROQ_API_KEY="gsk_your_key_here" # macOS/Linux
 ```
 
 ### Configuration Options
@@ -532,7 +546,7 @@ Maximum file size in bytes. Files larger than this will be excluded from indexin
 **Example:**
 ```json
 {
-  "maxFileSize": 10485760  // 10MB
+  "maxFileSize": 10485760
 }
 ```
 
@@ -561,7 +575,7 @@ Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if
 ```json
 {
   "skipLargeFiles": true,
-  "maxFileSize": 10485760  // 10MB
+  "maxFileSize": 10485760
 }
 ```
 
@@ -582,9 +596,9 @@ Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if
 }
 ```
 
-**Remember:** Set `GROQ_API_KEY` environment variable:
+**Remember:** Set `GROQ_API_KEY`:
 ```bash
-export GROQ_API_KEY="your-api-key"
+codexa config set GROQ_API_KEY "your-api-key"
 ```
 
 
@@ -623,10 +637,13 @@ export GROQ_API_KEY="your-api-key"
 cd my-project
 codexa init
 
-# 2. Index your codebase
+# 2. Set Groq Api Key
+codexa config set GROQ_API_KEY <your-groq-key>
+
+# 3. Index your codebase
 codexa ingest
 
-# 3. Ask questions
+# 4. Ask questions
 codexa ask "What is the main purpose of this codebase?"
 codexa ask "How does the user authentication work?"
 codexa ask "Where is the API routing configured?"
@@ -748,14 +765,17 @@ When you run `codexa ask`:
 **Problem:** Using Groq provider but API key is missing.
 
 **Solutions:**
-1. Set the environment variable:
+1. Set the API key using the config command (Recommended):
    ```bash
-   export GROQ_API_KEY="your-api-key"
+   codexa config set GROQ_API_KEY "your-api-key"
    ```
-2. Or add it to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.)
+2. Or set the environment variable:
+   ```bash
+   export GROQ_API_KEY="your-api-key" # macOS/Linux
+   ```
 3. Verify it's set:
    ```bash
-   echo $GROQ_API_KEY
+   codexa config get GROQ_API_KEY
    ```
 
 ### Ingestion is Very Slow

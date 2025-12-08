@@ -12,14 +12,17 @@ description: Common questions and troubleshooting for Codexa.
 **Problem:** Using Groq provider but API key is missing.
 
 **Solutions:**
-1. Set the environment variable:
+1. Set the API key using the config command (Recommended):
    ```bash
-   export GROQ_API_KEY="your-api-key"
+   codexa config set GROQ_API_KEY "your-api-key"
    ```
-2. Or add it to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.)
+2. Or set the environment variable:
+   ```bash
+   export GROQ_API_KEY="your-api-key" #macOS/Linux
+   ```
 3. Verify it's set:
    ```bash
-   echo $GROQ_API_KEY
+   codexa config get GROQ_API_KEY
    ```
 
 ### Ingestion is Very Slow

@@ -29,7 +29,7 @@ npm install -g codexa
 Verify installation:
 
 ```bash
-codexa --version
+codexa
 ```
 
 ### Method 2: Homebrew (macOS)
@@ -81,35 +81,20 @@ Groq provides fast cloud-based LLMs with a generous free tier and is the recomme
 4. Create a new API key
 5. Copy your API key (starts with `gsk_`)
 
-**Step 2: Set Environment Variable**
+**Step 2: Set API Key**
 
-**macOS/Linux:**
+Run the following command to securely save your API key:
+
 ```bash
-# Add to your shell profile (~/.zshrc, ~/.bashrc, etc.)
-export GROQ_API_KEY="gsk_your_api_key_here"
-
-# Reload your shell or run:
-source ~/.zshrc  # or ~/.bashrc
+codexa config set GROQ_API_KEY "gsk_your_api_key_here"
 ```
 
-**Windows (PowerShell):**
-```powershell
-$env:GROQ_API_KEY="gsk_your_api_key_here"
-
-# Or add permanently:
-[System.Environment]::SetEnvironmentVariable('GROQ_API_KEY', 'gsk_your_api_key_here', 'User')
-```
-
-**Windows (Command Prompt):**
-```cmd
-setx GROQ_API_KEY "gsk_your_api_key_here"
-```
+This will save the key to your local configuration file (`.codexarc.json`).
 
 **Step 3: Verify API Key is Set**
 
 ```bash
-echo $GROQ_API_KEY  # macOS/Linux
-echo %GROQ_API_KEY% # Windows CMD
+codexa config get GROQ_API_KEY
 ```
 
 **Step 4: Configure Codexa**

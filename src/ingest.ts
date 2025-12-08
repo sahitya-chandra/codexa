@@ -135,9 +135,15 @@ export async function ingestRepository({
   const chunks: FileChunk[] = [];
 
   for (const file of files) {
-    const ch = await chunkFile(file, config.maxChunkSize, config.chunkOverlap);
-    ch.forEach((c) => (c.filePath = path.relative(cwd, c.filePath)));
-    chunks.push(...ch);
+    try {
+      const ch = await chunkFile(file, config.maxChunkSize, config.chunkOverlap);
+      ch.forEach((c) => (c.filePath = path.relative(cwd, c.filePath)));
+      chunks.push(...ch);
+    } catch (error) {
+      spinnerChunk.clear();
+      console.warn(`\nFailed to chunk file ${file}: ${error instanceof Error ? error.message : String(error)}`);
+      spinnerChunk.render();
+    }
 
     await tick();
   }
@@ -162,12 +168,22 @@ export async function ingestRepository({
   const batchSize = 32;
   progress.start(chunks.length, 0);
   for (let i = 0; i < chunks.length; i += batchSize) {
-    const batch = chunks.slice(i, i + batchSize);
-    const texts = batch.map((c) => c.content);
-    const vectors = await embedder.embed(texts);
-    batch.forEach((c, idx) => (c.embedding = vectors[idx]));
+    try {
+      const batch = chunks.slice(i, i + batchSize);
+      const texts = batch.map((c) => c.content);
+      const vectors = await embedder.embed(texts);
+      batch.forEach((c, idx) => (c.embedding = vectors[idx]));
 
-    progress.increment(batch.length);
+      progress.increment(batch.length);
+    } catch (error) {
+      // Log error but continue with next batch
+      // retry or DLQ this batch
+      const msg = error instanceof Error ? error.message : String(error);
+      // Temporarily stop progress bar to log error
+      progress.stop();
+      console.error(`\nFailed to embed batch starting at index ${i}: ${msg}`);
+      progress.start(chunks.length, i + batchSize);
+    }
     await tick();
   }
   progress.stop();

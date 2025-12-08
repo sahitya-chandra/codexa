@@ -8,7 +8,7 @@ import { generateConfig } from './config/generator';
 
 dotenv.config();
 
-const CONFIG_FILENAME = '.codexarc.json';
+export const CONFIG_FILENAME = '.codexarc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'groq',
