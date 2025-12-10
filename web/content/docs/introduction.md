@@ -17,6 +17,9 @@ description: Codexa is a powerful CLI tool that ingests your codebase and allows
 - ⚙️ **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters
 - 🚀 **Zero Setup**: Works out of the box with sensible defaults
 
+> [!WARNING]
+> **Codebase Size Limitation**: Codexa is optimized for small to medium-sized codebases. It currently supports projects with up to **200 files** and **20,000 chunks**. For larger codebases, consider using more restrictive `includeGlobs` patterns to focus on specific directories or file types.
+
 ## How It Works
 
 Codexa uses Retrieval-Augmented Generation (RAG) to answer questions about your codebase:

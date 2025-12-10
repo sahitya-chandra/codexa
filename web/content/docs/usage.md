@@ -60,6 +60,9 @@ codexa ingest --force
 
 **Note:** First ingestion may take a few minutes depending on your codebase size. Subsequent ingestions are faster as they only process changed files.
 
+> [!WARNING]
+> **Codebase Size Limitation**: Codexa currently supports projects with up to **200 files** and **20,000 chunks**. If your codebase exceeds these limits, you'll receive an error. To work around this, use more restrictive `includeGlobs` patterns to focus on specific directories or file types.
+
 ---
 
 ### `config`

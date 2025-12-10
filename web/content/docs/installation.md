@@ -104,7 +104,7 @@ Codexa defaults to using Groq when you run `codexa init`. If you need to manuall
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2"
 }

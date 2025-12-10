@@ -66,7 +66,7 @@ Codexa uses a `.codexarc.json` file in your project root.
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2"
 }

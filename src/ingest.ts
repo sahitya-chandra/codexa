@@ -110,6 +110,11 @@ export async function ingestRepository({
     return;
   }
 
+  if (allFiles.length > 200) {
+    spinnerFiles.stop()
+    throw new Error("Codebase is too large, cannot index it")
+  }
+
   // Filter files: exclude binaries and large files
   spinnerFiles.text = `Filtering files (found ${allFiles.length})...`;
   const { included: files, excluded } = await filterFiles(allFiles, {
@@ -149,6 +154,12 @@ export async function ingestRepository({
 
     await tick();
   }
+
+  if (chunks.length > 20000) {
+    spinnerChunk.stop()
+    throw new Error("Chunk limit exceeded, unable to create embeddings!")
+  }
+
   spinnerChunk.succeed(`Chunked files (${chunks.length} chunks)`);
 
   const spinnerCompress = ora('Compressing chunks...').start();

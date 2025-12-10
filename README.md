@@ -58,6 +58,8 @@
 - ⚙️ **Highly Configurable**: Fine-tune chunking, retrieval, and model parameters
 - 🚀 **Zero Setup**: Works out of the box with sensible defaults
 
+> ⚠️ **Codebase Size Limitation**: Codexa is optimized for small to medium-sized codebases. It currently supports projects with up to **200 files** and **20,000 chunks**. For larger codebases, consider using more restrictive `includeGlobs` patterns to focus on specific directories or file types.
+
 ## Installation
 
 ### Prerequisites
@@ -165,15 +167,15 @@ Codexa defaults to using Groq when you run `codexa init`. If you need to manuall
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2"
 }
 ```
 
-**Available Groq Models:**
-- `llama-3.1-8b-instant` - Fast responses (recommended, default)
-- `llama-3.1-70b-versatile` - Higher quality, slower
+**Models you can use:**
+- `openai/gpt-oss-120b` (recommended, default)
+- `llama-3.1-70b-versatile`
 
 
 
@@ -429,7 +431,7 @@ The LLM provider to use for generating answers.
 
 **Type:** `string`  
 **Type:** `string`  
-**Default:** `"llama-3.1-8b-instant"`
+**Default:** `"openai/gpt-oss-120b"`
 
 The model identifier to use.
 
@@ -585,7 +587,7 @@ Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
   "maxChunkSize": 300,
@@ -607,7 +609,7 @@ codexa config set GROQ_API_KEY "your-api-key"
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "maxChunkSize": 150,
   "chunkOverlap": 15,
   "topK": 6,

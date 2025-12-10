@@ -1,6 +1,6 @@
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
   "maxChunkSize": 800,
@@ -96,5 +96,5 @@
   "maxFileSize": 5242880,
   "skipBinaryFiles": true,
   "skipLargeFiles": true,
-  "groqApiKey": "test_key_123"
+  "groqApiKey": "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"
 }

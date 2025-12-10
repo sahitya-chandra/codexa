@@ -371,7 +371,7 @@ export function generateConfig(
   // Start with base config or defaults
   const config: AgentConfig = {
     modelProvider: 'groq',
-    model: 'llama-3.1-8b-instant',
+    model: 'openai/gpt-oss-120b',
     embeddingProvider: 'local',
     embeddingModel: 'Xenova/all-MiniLM-L6-v2',
     maxChunkSize: 800,

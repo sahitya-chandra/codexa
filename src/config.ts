@@ -12,7 +12,7 @@ export const CONFIG_FILENAME = '.codexarc.json';
 
 const DEFAULT_CONFIG: AgentConfig = {
   modelProvider: 'groq',
-  model: 'llama-3.1-8b-instant', // can also use llama-3.3-70b-versatile for better perf
+  model: 'openai/gpt-oss-120b', // can also use llama-3.3-70b-versatile for better perf
   embeddingProvider: 'local',
   embeddingModel: 'Xenova/all-MiniLM-L6-v2',
   // localModelUrl: 'http://localhost:11434',

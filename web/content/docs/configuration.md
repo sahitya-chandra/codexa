@@ -61,7 +61,7 @@ The LLM provider to use for generating answers.
 
 **Type:** `string`
 **Type:** `string`
-**Default:** `"llama-3.1-8b-instant"`
+**Default:** `"openai/gpt-oss-120b"`
 
 The model identifier to use.
 
@@ -217,7 +217,7 @@ Whether to skip files exceeding `maxFileSize` during indexing. Set to `false` if
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "embeddingProvider": "local",
   "embeddingModel": "Xenova/all-MiniLM-L6-v2",
   "maxChunkSize": 300,
@@ -239,7 +239,7 @@ codexa config set GROQ_API_KEY "your-api-key"
 ```json
 {
   "modelProvider": "groq",
-  "model": "llama-3.1-8b-instant",
+  "model": "openai/gpt-oss-120b",
   "maxChunkSize": 150,
   "chunkOverlap": 15,
   "topK": 6,
