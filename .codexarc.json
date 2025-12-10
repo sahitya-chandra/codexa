@@ -96,5 +96,5 @@
   "maxFileSize": 5242880,
   "skipBinaryFiles": true,
   "skipLargeFiles": true,
-  "groqApiKey": "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"
+  "groqApiKey": ""
 }
