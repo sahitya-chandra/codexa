@@ -111,8 +111,8 @@ export async function ingestRepository({
   }
 
   if (allFiles.length > 200) {
-    spinnerFiles.stop()
-    throw new Error("Codebase is too large, cannot index it")
+    spinnerFiles.stop();
+    throw new Error('Codebase is too large, cannot index it');
   }
 
   // Filter files: exclude binaries and large files
@@ -156,8 +156,8 @@ export async function ingestRepository({
   }
 
   if (chunks.length > 20000) {
-    spinnerChunk.stop()
-    throw new Error("Chunk limit exceeded, unable to create embeddings!")
+    spinnerChunk.stop();
+    throw new Error('Chunk limit exceeded, unable to create embeddings!');
   }
 
   spinnerChunk.succeed(`Chunked files (${chunks.length} chunks)`);
